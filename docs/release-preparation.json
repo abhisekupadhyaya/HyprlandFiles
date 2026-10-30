@@ -4,7 +4,7 @@
   "date": "2026-10-30",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 77,
+    "passed": 88,
     "scope": "isolated filesystem, lifecycle, IPC, hardware selection, palette and activation safety",
     "live_install": false
   },
@@ -31,6 +31,23 @@
     "Physical authentication, TTY, lid/reboot and complete session acceptance of portable runtime paths",
     "Broader GPU, external monitor and sustained thermal/battery validation",
     "GitHub CI run before first push",
-    "Permanent signed binary archive retention for released versions"
-  ]
+    "Off-machine backup and public distribution of the prepared recovery archive"
+  ],
+  "recovery_kit": {
+    "artifacts": 33,
+    "locked_desktop_packages": 28,
+    "artifact_hashes_verified": true,
+    "git_manifest": "locks/recovery-ubuntu-26.04-amd64.json",
+    "binary_location": "retained separately from Git",
+    "archive_reproducibility": "isolated fixture test passes; real archive extraction checks are recorded outside the source tree",
+    "fresh_install_executed": false
+  },
+  "project_standards": {
+    "maintainer_policy": "MAINTAINERS.md",
+    "release_policy": "docs/releases.md",
+    "roadmap": "ROADMAP.md",
+    "code_ownership": ".github/CODEOWNERS",
+    "release_input_inventory": "docs/release-inputs.spdx.json",
+    "remote_protections": "not changed; owner configuration required"
+  }
 }

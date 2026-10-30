@@ -8,7 +8,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
-EXCLUDED={'.git','.cache','__pycache__','build','dist','reports','backups','.venv'}
+EXCLUDED={'.git','.cache','__pycache__','build','dist','reports','backups','.venv','bundles'}
 PATTERNS=[rb'-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----',
           rb'gh[pousr]_[A-Za-z0-9]{30,}',rb'tskey-[A-Za-z0-9_-]{20,}']
 

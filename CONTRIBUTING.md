@@ -26,3 +26,7 @@ Document validation honestly. A simulation, successful package installation,
 running process, or synthetic password test is not physical acceptance. Keep
 failed observations and limitations in release notes. Contributions are licensed
 under MIT; keep any third-party attribution and redistribution obligations.
+
+Project governance is in MAINTAINERS.md, release gates in docs/releases.md and
+planned support work in ROADMAP.md. CODEOWNERS requests owner review; hosting
+branch rules must be configured separately to enforce it.

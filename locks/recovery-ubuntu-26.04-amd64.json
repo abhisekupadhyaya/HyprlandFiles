@@ -1,0 +1,331 @@
+{
+  "schema": 1,
+  "target": "ubuntu-26.04-amd64",
+  "lock_sha256": "45b3bfce5515a17cf6f75725cca582cd84a857b3a6dea9849bb40f63101bdab2",
+  "patch_sha256": "63dd2d85c649f4388bb2cb02b0ca8dd72b9b472e9256eb16097c5dddbd204255",
+  "artifacts": [
+    {
+      "kind": "package",
+      "name": "fuzzel",
+      "file": "packages/fuzzel_1.12.0+ds-1build1_amd64.deb",
+      "sha256": "f8121e7e7c08e78ed4c26e3245274eaea9bc75c6a2a34a1b06f4a7a1525fb602",
+      "size": 131742,
+      "version": "1.12.0+ds-1build1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/f/fuzzel/fuzzel_1.12.0+ds-1build1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "gir1.2-gtklayershell-0.1",
+      "file": "packages/gir1.2-gtklayershell-0.1_0.10.0-1_amd64.deb",
+      "sha256": "393061d7e4df9992f944fca2cf8f2df493c6ca90797093b412f7c7c8627845ca",
+      "size": 4688,
+      "version": "0.10.0-1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/g/gtk-layer-shell/gir1.2-gtklayershell-0.1_0.10.0-1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "greetd",
+      "file": "packages/greetd_0.10.3-5_amd64.deb",
+      "sha256": "0e576f2872f210a6cd06d29d86598c9597139d6d35b99ef3d57da3c8a5a6ee95",
+      "size": 360836,
+      "version": "0.10.3-5",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/g/greetd/greetd_0.10.3-5_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hypridle",
+      "file": "packages/hypridle_0.1.8-1ppa1~1resolute1_amd64.deb",
+      "sha256": "68c2eda817f386690d24b2a9af4d825629d81315ec8b178ea97f30a61d221c92",
+      "size": 132586,
+      "version": "0.1.8-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hypridle/hypridle_0.1.8-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprland-data",
+      "file": "packages/hyprland-data_0.44.0-10ppa1_all.deb",
+      "sha256": "88423e4ac4bdad89a7fd948c4617fc4a291889e685925cdb171afefd0eb1aa6b",
+      "size": 46869312,
+      "version": "0.44.0-10ppa1",
+      "architecture": "all",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprland-data/hyprland-data_0.44.0-10ppa1_all.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprland-guiutils",
+      "file": "packages/hyprland-guiutils_0.2.2-1ppa2~1resolute1_amd64.deb",
+      "sha256": "6806420dfb11d806454d670a2b3937b093fd7a1891e440782f655f0069519f4f",
+      "size": 195060,
+      "version": "0.2.2-1ppa2~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprland-guiutils/hyprland-guiutils_0.2.2-1ppa2~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprland",
+      "file": "packages/hyprland_0.57.0-1ppa2~1resolute1_amd64.deb",
+      "sha256": "1f12f6b6ec302938ec8579e7a42c8d99b19c5924bb156ed528a6759330732cf6",
+      "size": 5745622,
+      "version": "0.57.0-1ppa2~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprland/hyprland_0.57.0-1ppa2~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprlock",
+      "file": "packages/hyprlock_0.9.6-1ppa1~1resolute1_amd64.deb",
+      "sha256": "7b271884fcfc7e547a43b8dd5853dfe36743bd50e1e7b0d52f3fc2c63f5f596f",
+      "size": 372610,
+      "version": "0.9.6-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprlock/hyprlock_0.9.6-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprpaper",
+      "file": "packages/hyprpaper_0.8.4-1ppa3~1resolute1_amd64.deb",
+      "sha256": "7bf4ca88df520b9494cf676a4e102219b28f6a34e979ca4ca424c2a3402048db",
+      "size": 184416,
+      "version": "0.8.4-1ppa3~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprpaper/hyprpaper_0.8.4-1ppa3~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprpolkitagent",
+      "file": "packages/hyprpolkitagent_0.2.0-1ppa1~1resolute1_amd64.deb",
+      "sha256": "a6c7ce2c2a749237f8f32ec056206ffaceada7c9d1282a003bfd844f22091a25",
+      "size": 133862,
+      "version": "0.2.0-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprpolkitagent/hyprpolkitagent_0.2.0-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "hyprshutdown",
+      "file": "packages/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb",
+      "sha256": "814f803583551113e9339855253bebcb0832e8bb4aae4215eec2b087b5fc4217",
+      "size": 146098,
+      "version": "0.1.1-1ppa3~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprshutdown/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "kitty-shell-integration",
+      "file": "packages/kitty-shell-integration_0.45.0-1build1_all.deb",
+      "sha256": "8274151a9933c9e1bd1f8abee3d72e2fd95ee0ba19a148941684e2e04b4d2afa",
+      "size": 40284,
+      "version": "0.45.0-1build1",
+      "architecture": "all",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/k/kitty/kitty-shell-integration_0.45.0-1build1_all.deb"
+    },
+    {
+      "kind": "package",
+      "name": "kitty-terminfo",
+      "file": "packages/kitty-terminfo_0.45.0-1build1_all.deb",
+      "sha256": "4a7533568160ea6759ec224b339c39533d8164c093189881a9f16fe08f75c795",
+      "size": 19440,
+      "version": "0.45.0-1build1",
+      "architecture": "all",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/k/kitty/kitty-terminfo_0.45.0-1build1_all.deb"
+    },
+    {
+      "kind": "package",
+      "name": "kitty",
+      "file": "packages/kitty_0.45.0-1build1_amd64.deb",
+      "sha256": "2c173c48f3f34f587690c823b33088b8a84ed5a904a275ff277e7a328baf0659",
+      "size": 9841640,
+      "version": "0.45.0-1build1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/k/kitty/kitty_0.45.0-1build1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "labwc",
+      "file": "packages/labwc_0.9.3-1_amd64.deb",
+      "sha256": "250f9d73a849f8e270cc3fce3a91507c38402446c5513855bf124114ca460474",
+      "size": 323788,
+      "version": "0.9.3-1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/l/labwc/labwc_0.9.3-1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libaquamarine14",
+      "file": "packages/libaquamarine14_0.15.1-1ppa1~1resolute1_amd64.deb",
+      "sha256": "63de0904066a95c8af85ba648bde53ba23edbe0856a7c9fcac13c3b0d5050cc5",
+      "size": 431904,
+      "version": "0.15.1-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/a/aquamarine/libaquamarine14_0.15.1-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libhyprcursor1",
+      "file": "packages/libhyprcursor1_0.1.13-1ppa1~1resolute1_amd64.deb",
+      "sha256": "ba83c979c7e85ffc2aebdb96006255393e11d10bc4abd7843031ada398d41b29",
+      "size": 200620,
+      "version": "0.1.13-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprcursor/libhyprcursor1_0.1.13-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libhyprgraphics4",
+      "file": "packages/libhyprgraphics4_0.5.1-1ppa3~1resolute1_amd64.deb",
+      "sha256": "6a2d5a3a904d788c0e1ab2d6be7f7020e2348de5f67aa210606bff0cb910835c",
+      "size": 93842,
+      "version": "0.5.1-1ppa3~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprgraphics/libhyprgraphics4_0.5.1-1ppa3~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libhyprlang2",
+      "file": "packages/libhyprlang2_0.6.8-3ppa2~1resolute1_amd64.deb",
+      "sha256": "cfdc1ecad2f482e16dbb6b1e0f1a48605f5d45f88ab7075180bd669505a9e7fb",
+      "size": 105142,
+      "version": "0.6.8-3ppa2~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprlang/libhyprlang2_0.6.8-3ppa2~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libhyprtoolkit6",
+      "file": "packages/libhyprtoolkit6_0.6.0-1ppa3~1resolute1_amd64.deb",
+      "sha256": "00cab9e4a728c73d71058094b506b95cd0b28af645c65fcf146e3963abfe3cef",
+      "size": 569336,
+      "version": "0.6.0-1ppa3~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprtoolkit/libhyprtoolkit6_0.6.0-1ppa3~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libhyprutils13",
+      "file": "packages/libhyprutils13_0.14.3-1ppa1~1resolute1_amd64.deb",
+      "sha256": "01a64d47d39f4fa8ea7048d19fe581569b4f6487ab671443daa1c3b192314d34",
+      "size": 208580,
+      "version": "0.14.3-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprutils/libhyprutils13_0.14.3-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libhyprwire3",
+      "file": "packages/libhyprwire3_0.3.1-1ppa4~1resolute1_amd64.deb",
+      "sha256": "792f3b249444ec2d84b994106d362669eb8d432a7290a098e20e8bf2f531b1b3",
+      "size": 142578,
+      "version": "0.3.1-1ppa4~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprwire/libhyprwire3_0.3.1-1ppa4~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libsfdo0",
+      "file": "packages/libsfdo0_0.1.4-1_amd64.deb",
+      "sha256": "e463baa0a5dfc3461f868e238527700a88705bd787bc6c8afd692412b07677b3",
+      "size": 36970,
+      "version": "0.1.4-1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/libs/libsfdo/libsfdo0_0.1.4-1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "libudis86.1",
+      "file": "packages/libudis86.1_1.7.2+186-1ppa1~1resolute1_amd64.deb",
+      "sha256": "be2ba243e8ef8f96297ea9dcf0734c2a6c644f8755ac941ca299c0799f487fa6",
+      "size": 55234,
+      "version": "1.7.2+186-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/u/udis86/libudis86.1_1.7.2+186-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "greeter",
+      "name": "nwg-hello",
+      "file": "packages/nwg-hello_0.4.2-1+hf1_amd64.deb",
+      "sha256": "5f9bd607b00c3fef2da6918490d10bf612f42a3a9a6d3fda11dadb024b3e3976",
+      "size": 1450208,
+      "version": "0.4.2-1+hf1",
+      "architecture": "amd64"
+    },
+    {
+      "kind": "package",
+      "name": "sway-notification-center",
+      "file": "packages/sway-notification-center_0.12.4-1_amd64.deb",
+      "sha256": "a186a8330ba60971744af73810128b25e0ece580c0dee708e42930d4de14d1e5",
+      "size": 230748,
+      "version": "0.12.4-1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/s/sway-notification-center/sway-notification-center_0.12.4-1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "waybar",
+      "file": "packages/waybar_0.15.0-1_amd64.deb",
+      "sha256": "72c9ee907d03f62882bdf11928f0f09ad1676e766ad9b153999eb50068b4924e",
+      "size": 890406,
+      "version": "0.15.0-1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/w/waybar/waybar_0.15.0-1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "wlr-randr",
+      "file": "packages/wlr-randr_0.4.1-1build1_amd64.deb",
+      "sha256": "5e2868a9e5fad144d6d69a2288f4d39ccfaba38b7683888640d726b377811c3a",
+      "size": 13006,
+      "version": "0.4.1-1build1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/w/wlr-randr/wlr-randr_0.4.1-1build1_amd64.deb"
+    },
+    {
+      "kind": "package",
+      "name": "xdg-desktop-portal-hyprland",
+      "file": "packages/xdg-desktop-portal-hyprland_1.5.0-1ppa1~1resolute1_amd64.deb",
+      "sha256": "e8c6178f7015e04a355bf7a82cd9d42edcbc083d77db9132a2bbaa1ecaaf241a",
+      "size": 406380,
+      "version": "1.5.0-1ppa1~1resolute1",
+      "architecture": "amd64",
+      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/x/xdg-desktop-portal-hyprland/xdg-desktop-portal-hyprland_1.5.0-1ppa1~1resolute1_amd64.deb"
+    },
+    {
+      "kind": "source",
+      "name": "nwg-hello",
+      "file": "sources/nwg-hello-original.deb",
+      "sha256": "ca4d4400f57f5ab56819c4f5b7ba7560aeddc0ed523d4b86c58251fc955c8db6",
+      "size": 1449944,
+      "version": "0.4.2-1",
+      "architecture": "amd64",
+      "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/n/nwg-hello/nwg-hello_0.4.2-1_amd64.deb"
+    },
+    {
+      "kind": "wheel",
+      "name": "colorthief-0.2.1-py2.py3-none-any.whl",
+      "file": "wheels/colorthief-0.2.1-py2.py3-none-any.whl",
+      "sha256": "b04fc8ce5cf9c888768745e29cb19b7b688d5711af6fba26e8057debabec56b9",
+      "size": 6134,
+      "source_url": "https://files.pythonhosted.org/packages/56/18/be03b7058e65f9df479b14e7af4e73945ce311e07aaad45cf2536e14791a/colorthief-0.2.1-py2.py3-none-any.whl"
+    },
+    {
+      "kind": "wheel",
+      "name": "pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "file": "wheels/pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "sha256": "e91c2b1cbeae768c98752e67e717e283d68dae45717b41f2d91eaee648e37b7d",
+      "size": 7142574,
+      "source_url": "https://files.pythonhosted.org/packages/1d/f2/1371707ce438ba9a43f9d24089828494ec6f9396e28cd7903aa704dd6306/pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+    },
+    {
+      "kind": "wheel",
+      "name": "pywal16-3.8.15-py3-none-any.whl",
+      "file": "wheels/pywal16-3.8.15-py3-none-any.whl",
+      "sha256": "7b463c184bffd5c015743f0e9fa0c5983f31928325ca74a011db2c8d70c80a68",
+      "size": 166349,
+      "source_url": "https://files.pythonhosted.org/packages/eb/bb/6ffe31b21e9f5c06e2eb2b194662e3bae8a37fa7c812625d0b2e0a04c7bb/pywal16-3.8.15-py3-none-any.whl"
+    }
+  ]
+}

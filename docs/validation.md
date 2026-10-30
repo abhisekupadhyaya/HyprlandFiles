@@ -28,13 +28,21 @@ outputs; Unix socket readiness uses a private temporary socket.
 
 Native Lua parser, deterministic patched package builds and locked wheel checks
 are additional local integration checks. Automated results are recorded in
-[release-preparation.json](release-preparation.json): 77 tests passed, native Lua
+[release-preparation.json](release-preparation.json): 88 tests passed, native Lua
 and Fuzzel validation passed for both profiles, controller unit syntax passed,
 and two patched greeter builds were identical; CI execution is not claimed until GitHub runs it.
 
 **Release gates still open:** actual clean Ubuntu Server install through APT,
 manual boot/TTY/authentication/lifecycle tests of this portable layout, broader
-GPU/desktop/VM testing, and retained signed package archives for a published
-release. No root install, logout or reboot of the developer's running desktop is
+GPU/desktop/VM testing, and off-machine retention/public distribution of the prepared
+recovery archive. No root install, logout or reboot of the developer's running desktop is
 performed while preparing this repository. Do not relabel this RC production-
 validated until those gates have evidence.
+
+
+A follow-up added automatic default profile selection and a verified 33-artifact
+recovery kit anchored in Git. The kit is actually prepared and verified locally;
+recovery/tamper/missing/symlink and deterministic source-plus-kit packaging tests
+pass. No fresh-system root installer or physical lifecycle test was executed by
+this preparation. A retained kit reduces archive-availability risk; it does not
+expand OS compatibility or substitute for clean-machine acceptance.

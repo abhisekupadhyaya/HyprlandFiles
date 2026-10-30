@@ -27,8 +27,9 @@ cd HyprlandFiles
 ./install.sh --profile laptop-server
 ```
 
-Use `./install.sh` for a conventional desktop whose login appears at boot,
-including on machines without a lid. The installer shows its plan, asks for
+The default `./install.sh` detects a readable laptop lid and selects the
+laptop/server profile; otherwise it selects a conventional desktop. Override
+with `--profile desktop` or `--profile laptop-server` when appropriate. The installer shows its plan, asks for
 explicit confirmation, then uses sudo for the system stage. It configures the
 next boot; **you choose when to reboot**. Never use `curl | sudo sh`.
 
@@ -109,8 +110,8 @@ sudo python3 tools/installer.py freeze
 ```
 
 The installer refuses package removals and changes to existing unrelated
-packages. Exact-version packages must be available from the signed configured
-sources; it never silently substitutes a newer Hyprland release. PPA trust is
+packages. Exact-version desktop packages can come from signed configured sources or the
+verified recovery kit; it never silently substitutes a newer Hyprland release. PPA trust is
 explicit. [Update procedure](docs/updates.md), [rollback](docs/rollback.md),
 [security policy](SECURITY.md), [sources and licensing](THIRD_PARTY_NOTICES.md).
 
@@ -118,9 +119,33 @@ Networking/Netplan, SSH/Tailscale, firewall, disks, bootloader and driver polici
 remain outside the installer. No telemetry, accounts, public ports, remote
 publishing, shell replacements or remote dotfile installers are included.
 
+## Keep a reinstall archive
+
+Version pins are not a backup. A recovery kit retains all 28 locked desktop
+packages, the patched greeter and original build input, and the three colour-
+runtime wheels. Its 33 artifact hashes and package identities are checked against
+[the manifest in Git](locks/recovery-ubuntu-26.04-amd64.json), not a manifest that
+an untrusted download supplies for itself.
+
+A prepared source-plus-kit release has the kit in `bundles/ubuntu-26.04-amd64`.
+Extract it and run `./install.sh`; the installer detects the kit automatically.
+There is no manual theme reconstruction or greeter build in the kit install path.
+Keep a separate backup of that release archive. For a standalone retained kit:
+
+```sh
+./install.sh verify-bundle --bundle /path/to/recovery-kit
+./install.sh --bundle /path/to/recovery-kit
+```
+
+The kit removes reliance on old desktop binaries staying in the PPA. Normal
+Ubuntu dependencies still use signed Ubuntu repositories and security updates;
+this is not a full offline OS image or cross-release ABI emulator. See
+[reproducibility](docs/reproducibility.md) for retention and release preparation.
+
 ## Contribute
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md). Run `./scripts/check.sh` for offline
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [maintainer policy](MAINTAINERS.md),
+[release gates](docs/releases.md) and the [roadmap](ROADMAP.md). Run `./scripts/check.sh` for offline
 standard-library checks. Extended palette tests use checksum-verified locked
 wheels: `python3 tools/prepare_dev.py`, then `./scripts/check.sh`. These commands
 need no sudo and never activate login, log out, or reboot.

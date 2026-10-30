@@ -249,3 +249,19 @@ def reject_apt_removals(simulation):
         raise ValueError('APT proposes removals. Resolve manually; no packages installed.')
     if 'WARNING: The following packages cannot be authenticated!' in simulation:
         raise ValueError('APT authentication failed')
+
+
+def detect_profile(lid_root=Path('/proc/acpi/button/lid')):
+    """Choose the supported laptop policy only when ACPI lid hardware exists."""
+    return 'laptop-server' if any(lid_root.glob('*/state')) else 'desktop'
+
+
+def reject_unrelated_changes(simulation, installed, allowed):
+    """APT may omit :architecture while dpkg includes it; compare both forms."""
+    existing={name.split(':',1)[0] for name in installed}
+    for line in simulation.splitlines():
+        parts=line.split()
+        if len(parts)>1 and parts[0]=='Inst':
+            name=parts[1].split(':',1)[0]
+            if name in existing and name not in allowed:
+                raise ValueError('APT would change an existing unrelated package: '+name+'. Update Ubuntu separately, then retry.')

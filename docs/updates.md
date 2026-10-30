@@ -20,7 +20,9 @@ For a release update:
    update one OS/architecture lock and the reviewed source key only when needed.
 2. Cache both current and candidate .debs before changing the running machine.
    Use signed APT metadata; record SHA256 and upstream/source licenses. Locks in
-   Git do not guarantee future archive availability. Retain the original pinned
+   Git do not guarantee future archive availability. Use the recovery-kit builder
+   and commit its reviewed manifest; retain a source-plus-kit archive separately.
+   Retain the original pinned
    Python wheels and patched greeter base package too.
 3. Rebuild/review nwg-hello privacy/IPC patches; never replace the patched client
    with the old credential-logging Ubuntu version. The lock version has `+hf1`.

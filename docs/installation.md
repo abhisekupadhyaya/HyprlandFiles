@@ -29,8 +29,9 @@ managers and never stops them to make installation proceed.
 The setup phases are:
 
 1. System: verify support/session state; snapshot source/pin/mask changes; trust
-   only the bundled PPA signing key; update signed APT metadata; build the patched
-   greeter from its exact verified Ubuntu package; simulate APT and reject
+   only the bundled PPA signing key for online installs; update signed APT
+   metadata; build the patched greeter for online installs, or verify/use all
+   preserved desktop binaries and wheels from a recovery kit; simulate APT and reject
    removals/existing unrelated upgrades; install locked desktop packages and
    missing Ubuntu dependencies; prepare hashed palette wheels; transactionally
    install the root-owned runtime and login/controller files without enabling
@@ -52,13 +53,14 @@ paths and personal `~/.config/hypr/user.lua` are never overwritten.
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--profile` | `desktop` | `laptop-server` enables server-first lid policy |
+| `--profile` | `auto` | Detect a readable laptop lid; otherwise desktop. Explicit overrides available |
 | `--keyboard` | `us` | XKB layout, e.g. `gb` or `us,de` |
 | `--scale` | `auto` | Automatic display sizing, or explicit 0.5–4 scale |
 | `--gpu` | `auto` | Intel i915/xe preference, compositor `default`, or PCI ID |
 | `--wallpaper` | Included blue still | Initial local image; cached choice is preserved on rerun |
 | `--adopt` | Off | Explicit backup/replacement of conflicting managed files |
 | `--yes` | Off | Noninteractive approval of the same setup plan |
+| `--bundle` | Auto-detect `bundles/ubuntu-26.04-amd64` | Verify and use preserved desktop packages/wheels |
 
 Keep the same system profile on rerun. Automatic profile migration is refused;
 changing lid/power behaviour requires a separate reviewed migration.

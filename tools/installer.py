@@ -10,14 +10,12 @@ import json
 import os
 from pathlib import Path
 import pwd
-import shlex
-import shutil
 import subprocess
 import sys
 
 from hflib import (PREFIX, ROOT_STATE, VERSION, Transaction, atomic, checked_download,
                    extract_wheel, fingerprint, managed_state, operation, os_release,
-                   output, reject_apt_removals, require_supported, run, validate_options, no_symlink_parents)
+                   output, reject_apt_removals, require_supported, run, validate_options, no_symlink_parents, detect_profile, reject_unrelated_changes)
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT/'locks/ubuntu-26.04-amd64.json').read_text())
@@ -165,8 +163,14 @@ def plan(a):
     print('Profile:',a.profile,'| keyboard:',a.keyboard,'| display scale:',a.scale,'| GPU:',a.gpu)
     print('Target account:',pwd.getpwuid(os.getuid()).pw_name)
     print('Ubuntu 26.04 amd64; exact Hyprland 0.57.0 stack from the cppiber PPA.')
-    print('Source trust: https://launchpad.net/~cppiber/+archive/ubuntu/hyprland')
-    print('Signing key: A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E')
+    if getattr(a,'bundle',None):
+        from recovery import verify
+        artifacts=verify(ROOT,Path(a.bundle).absolute())
+        print('Recovery kit:',Path(a.bundle).absolute(),'-',len(artifacts),'artifacts verified against Git manifest')
+        print('Desktop packages/runtime use the kit; ordinary dependencies use your signed Ubuntu sources.')
+    else:
+        print('Source trust: https://launchpad.net/~cppiber/+archive/ubuntu/hyprland')
+        print('Signing key: A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E')
     print('PPA, exact ABI pins, root-owned runtime, greetd + patched nwg-hello/labwc, desktop-only audio.')
     print('Packages:', ' '.join([*(f'{k}={v}' for k,v in LOCK['packages'].items()),*BASE_PACKAGES,'nwg-hello='+LOCK['nwg_hello']['version']]))
     print('System config: /etc/{greetd,nwg-hello,hyprlandfiles,systemd}; runtime:',PREFIX)
@@ -205,15 +209,20 @@ def system_install(a):
         previous=json.loads((ROOT_STATE/'installed.json').read_text())
         if previous['options']['profile']!=a.profile:
             raise ValueError('Profile migration requires a reviewed lid-policy change; retain the installed profile on rerun')
+    artifacts=None
+    if getattr(a,'bundle',None):
+        from recovery import verify
+        artifacts=verify(ROOT,Path(a.bundle).absolute())
     ROOT_STATE.mkdir(mode=0o700,parents=True,exist_ok=True)
     os.chmod(ROOT_STATE,0o700)
     with (ROOT_STATE/'installer.lock').open('w') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         store=ROOT_STATE/'backups'
         tx=Transaction(store,Path('/'),managed_state(store))
-        source_ops=[operation('/etc/apt/sources.list.d/hyprlandfiles.sources',(ROOT/'system/hyprlandfiles.sources').read_text()),
-                    operation('/etc/apt/preferences.d/60-hyprlandfiles-abi.pref',package_pins(dict({k:LOCK['packages'][k] for k in LOCK['ppa_packages']}, **{'nwg-hello':LOCK['nwg_hello']['version']}))),
+        source_ops=[operation('/etc/apt/preferences.d/60-hyprlandfiles-abi.pref',package_pins(dict({k:LOCK['packages'][k] for k in LOCK['ppa_packages']}, **{'nwg-hello':LOCK['nwg_hello']['version']}))),
                     operation('/etc/systemd/system/greetd.service',link='/dev/null')]
+        if artifacts is None:
+            source_ops.insert(0,operation('/etc/apt/sources.list.d/hyprlandfiles.sources',(ROOT/'system/hyprlandfiles.sources').read_text()))
         before_mask=fingerprint('/etc/systemd/system/greetd.service')
         if before_mask != 'absent':
             raise ValueError('Existing greetd unit override requires manual review')
@@ -224,9 +233,13 @@ def system_install(a):
         tx.apply(source_ops,adopt=a.adopt)
         run(['systemctl','daemon-reload'])
         run(['apt-get','update'])
-        from build_greeter import build
-        audited=build(ROOT,ROOT_STATE/'cache/greeter')
-        exact=[f'{k}={v}' for k,v in LOCK['packages'].items()]
+        if artifacts is None:
+            from build_greeter import build
+            audited=build(ROOT,ROOT_STATE/'cache/greeter')
+            exact=[f'{k}={v}' for k,v in LOCK['packages'].items()]
+        else:
+            audited=artifacts[('greeter','nwg-hello')]
+            exact=[str(artifacts[('package',name)]) for name in LOCK['packages']]
         command=['apt-get','--no-remove','--no-install-recommends','-o','Dpkg::Options::=--force-confold','install',*exact,*BASE_PACKAGES,str(audited)]
         simulation=output([command[0],'--simulate',*command[1:]])
         reject_apt_removals(simulation)
@@ -236,16 +249,14 @@ def system_install(a):
         existing=dict(
             line.split('\t',1) for line in output(['dpkg-query','-W','-f=${binary:Package}\t${Version}\n']).splitlines() if '\t' in line)
         allowed=set(LOCK['packages'])|{'nwg-hello'}
-        for line in simulation.splitlines():
-            parts=line.split()
-            if parts and parts[0]=='Inst' and parts[1] in existing and parts[1].split(':')[0] not in allowed:
-                raise ValueError('APT would change an existing unrelated package: '+parts[1]+'. Update Ubuntu separately, then retry.')
+        reject_unrelated_changes(simulation,existing,allowed)
         run([command[0],'--yes',*command[1:]],env=dict(os.environ,DEBIAN_FRONTEND='noninteractive',NEEDRESTART_MODE='l'))
         # Verify and prepare the colour runtime BEFORE enabling any boot path.
         runtime=ROOT_STATE/'cache/runtime/lib'
         runtime.mkdir(parents=True,exist_ok=True)
         for item in json.loads((ROOT/'locks/python-wheels.json').read_text()):
-            wheel=checked_download(item['url'],item['sha256'],ROOT_STATE/'cache'/item['filename'])
+            wheel=(artifacts[('wheel',item['filename'])] if artifacts is not None else
+                   checked_download(item['url'],item['sha256'],ROOT_STATE/'cache'/item['filename']))
             extract_wheel(wheel,runtime)
         # Only newly package-created defaults can be adopted without --adopt.
         known=managed_state(store)
@@ -391,6 +402,7 @@ def setup(a):
     command=['sudo','python3',ROOT/'tools/installer.py','system','--user',pwd.getpwuid(os.getuid()).pw_name,
              '--profile',a.profile,'--scale',a.scale,'--gpu',a.gpu,'--keyboard',a.keyboard]
     if a.adopt: command.append('--adopt')
+    if getattr(a,'bundle',None): command.extend(['--bundle',str(Path(a.bundle).absolute())])
     run(command)
     user_install(a)
     run(['sudo','python3',ROOT/'tools/installer.py','enable'])
@@ -400,9 +412,10 @@ def setup(a):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',nargs='?',default='setup',choices=('setup','plan','doctor','user','system','enable','rollback','freeze','version'))
+    parser.add_argument('action',nargs='?',default='setup',choices=('setup','plan','doctor','user','system','enable','rollback','freeze','version','verify-bundle'))
     parser.add_argument('snapshot',nargs='?')
-    parser.add_argument('--profile',choices=('desktop','laptop-server'),default='desktop')
+    parser.add_argument('--profile',choices=('auto','desktop','laptop-server'),default='auto',help='Default: detect a laptop lid, otherwise desktop')
+    parser.add_argument('--bundle',type=Path,help='Verified recovery-kit directory for preserved desktop packages and wheels')
     parser.add_argument('--scale',default='auto')
     parser.add_argument('--gpu',default='auto')
     parser.add_argument('--keyboard',default='us')
@@ -411,8 +424,17 @@ def main():
     parser.add_argument('--yes',action='store_true',help='Approve the displayed setup plan without interactive confirmation')
     parser.add_argument('--user',help=argparse.SUPPRESS)
     a=parser.parse_args()
+    conventional=ROOT/'bundles/ubuntu-26.04-amd64'
+    if not a.bundle and (conventional/'manifest.json').is_file():
+        a.bundle=conventional
+    if a.profile=='auto': a.profile=detect_profile()
     validate_options(a.profile,a.scale,a.gpu,a.keyboard)
     if a.action=='version': print(VERSION);return 0
+    if a.action=='verify-bundle':
+        if not a.bundle: parser.error('verify-bundle requires --bundle DIRECTORY')
+        from recovery import verify
+        print('Verified '+str(len(verify(ROOT,a.bundle)))+' recovery artifacts against the Git manifest')
+        return 0
     if a.action=='rollback' and not a.snapshot:parser.error('rollback needs an exact BACKUP path')
     if a.action=='system' and not a.user:parser.error('internal system phase requires --user')
     return {'setup':lambda:setup(a),'plan':lambda:plan(a),'system':lambda:system_install(a),
