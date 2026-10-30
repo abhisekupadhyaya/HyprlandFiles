@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "version": "0.1.0-rc.1",
+  "date": "2026-10-30",
+  "status": "release candidate; clean-machine and physical gates open",
+  "automated_tests": {
+    "passed": 77,
+    "scope": "isolated filesystem, lifecycle, IPC, hardware selection, palette and activation safety",
+    "live_install": false
+  },
+  "native_parsers": {
+    "Hyprland 0.57.0": "desktop auto scale and laptop-server scale 2 pass",
+    "Fuzzel": "both generated config profiles pass",
+    "systemd": "controller unit syntax passes with private executable path; unrelated host xfs_scrub CPUAccounting deprecation warnings observed"
+  },
+  "greeter_build": {
+    "version": "0.4.2-1+hf1",
+    "two_builds_identical": true,
+    "sha256": "5f9bd607b00c3fef2da6918490d10bf612f42a3a9a6d3fda11dadb024b3e3976"
+  },
+  "package_simulation": {
+    "environment": "existing compatible Ubuntu installation; not a clean image",
+    "exit_code": 0,
+    "removals": 0,
+    "install_executed": false
+  },
+  "key_fingerprint_verified": "A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E",
+  "public_source_audit": "no credential patterns or original private machine identifiers found; local state and caches excluded",
+  "not_verified": [
+    "Fresh Ubuntu Server installation of the portable release through APT",
+    "Physical authentication, TTY, lid/reboot and complete session acceptance of portable runtime paths",
+    "Broader GPU, external monitor and sustained thermal/battery validation",
+    "GitHub CI run before first push",
+    "Permanent signed binary archive retention for released versions"
+  ]
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "filename": "pywal16-3.8.15-py3-none-any.whl",
+    "sha256": "7b463c184bffd5c015743f0e9fa0c5983f31928325ca74a011db2c8d70c80a68",
+    "url": "https://files.pythonhosted.org/packages/eb/bb/6ffe31b21e9f5c06e2eb2b194662e3bae8a37fa7c812625d0b2e0a04c7bb/pywal16-3.8.15-py3-none-any.whl"
+  },
+  {
+    "filename": "colorthief-0.2.1-py2.py3-none-any.whl",
+    "sha256": "b04fc8ce5cf9c888768745e29cb19b7b688d5711af6fba26e8057debabec56b9",
+    "url": "https://files.pythonhosted.org/packages/56/18/be03b7058e65f9df479b14e7af4e73945ce311e07aaad45cf2536e14791a/colorthief-0.2.1-py2.py3-none-any.whl"
+  },
+  {
+    "filename": "pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "sha256": "e91c2b1cbeae768c98752e67e717e283d68dae45717b41f2d91eaee648e37b7d",
+    "url": "https://files.pythonhosted.org/packages/1d/f2/1371707ce438ba9a43f9d24089828494ec6f9396e28cd7903aa704dd6306/pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+  }
+]

@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+"""Lid-aware DPMS, using the actual internal connector names."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'python'))
+from hf_runtime import internal, lid_state, settings
+
+def dispatch(action, name=None):
+    options = 'action = ' + json.dumps(action)
+    if name is not None:
+        options += ', monitor = ' + json.dumps(name)
+    subprocess.run(['hyprctl','dispatch','hl.dsp.dpms({ '+options+' })'],check=True)
+
+def main():
+    mode = sys.argv[1] if len(sys.argv)>1 else 'resume'
+    closed = settings()['profile']=='laptop-server' and lid_state()=='closed'
+    if mode == 'startup':
+        if not closed:
+            return
+        subprocess.Popen(['/usr/local/bin/hf-lock'])
+        # The compositor's switch handler also locks; hf-lock is a singleton.
+    elif mode == 'resume':
+        dispatch('on')
+    if mode == 'close' or closed:
+        outputs = json.loads(subprocess.check_output(['hyprctl','monitors','all','-j'],text=True))
+        for output in outputs:
+            if internal(output['name']):
+                dispatch('off', output['name'])
+
+if __name__=='__main__':
+    try: main()
+    except (OSError, ValueError, subprocess.SubprocessError) as e: sys.exit(str(e))

@@ -1,0 +1,14 @@
+{
+  "failed-starting-session": "Could not start the desktop",
+  "login": "Sign in",
+  "login-failed": "That password was not accepted. Try again.",
+  "password": "Password",
+  "password-empty": "Enter your password",
+  "power-off": "Shut down",
+  "session": "Desktop",
+  "show-password": "Show password",
+  "sleep": "Sleep",
+  "reboot": "Restart",
+  "user": "User",
+  "welcome": "Welcome back"
+}

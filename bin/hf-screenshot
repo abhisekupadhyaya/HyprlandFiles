@@ -1,0 +1,12 @@
+#!/usr/bin/python3
+import subprocess,sys
+if sys.argv[1:]==['full']:
+    data=subprocess.check_output(['grim','-'])
+    subprocess.run(['wl-copy','--type','image/png'],input=data,check=True)
+    subprocess.run(['notify-send','-a','HyprlandFiles','Screenshot copied','Full desktop copied to clipboard.'],check=False)
+    raise SystemExit(0)
+r=subprocess.run(['slurp'],capture_output=True,text=True)
+if r.returncode==0 and r.stdout.strip():
+    data=subprocess.check_output(['grim','-g',r.stdout.strip(),'-'])
+    subprocess.run(['wl-copy','--type','image/png'],input=data,check=True)
+    subprocess.run(['notify-send','-a','HyprlandFiles','Screenshot copied','Paste into an application.'],check=False)

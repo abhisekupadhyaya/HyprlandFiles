@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<labwc_config>
+  <!-- Greeter only: no default application-launch/menu/window-management binds.
+       Native Ctrl+Alt+Fn VT switching is handled by the compositor itself. -->
+  <!-- 0.9.3 loads its defaults when the parsed list is empty, then removes
+       None bindings. These two explicit placeholders prevent that fallback.
+       Verified against its post_processing() and deduplication order. -->
+  <keyboard><keybind key="W-Return"><action name="None"/></keybind></keyboard>
+  <mouse><context name="Root"><mousebind button="Right" action="Press"><action name="None"/></mousebind></context></mouse>
+  <core><xwaylandPersistence>no</xwaylandPersistence></core>
+</labwc_config>

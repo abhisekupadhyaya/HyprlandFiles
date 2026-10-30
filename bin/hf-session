@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+"""greetd entry point. Keep lifecycle locks in a supervisor, out of GUI apps."""
+import fcntl
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"python"))
+from hf_runtime import settings, gpu_device
+
+
+def property(sid,name):
+    return subprocess.check_output(['loginctl','show-session',sid,'-p',name,'--value'],text=True).strip()
+
+
+def run_session(guard,runtime,env,launcher=('/usr/bin/start-hyprland',)):
+    # CLOEXEC plus close_fds prevents compositor/app children retaining a guard
+    # after logout. Only this supervisor owns its lifetime.
+    with open(guard,'rb') as held:
+        fcntl.flock(held,fcntl.LOCK_SH)
+        with open(Path(runtime)/'hf-session.lock','w') as singleton:
+            try:fcntl.flock(singleton,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            except BlockingIOError:raise RuntimeError('A managed HyprlandFiles desktop already exists')
+            child=subprocess.Popen(launcher,env=env,close_fds=True)
+            def forward(sig,_):
+                if child.poll() is None:child.send_signal(sig)
+            previous={s:signal.signal(s,forward) for s in (signal.SIGTERM,signal.SIGHUP,signal.SIGINT)}
+            try:return child.wait()
+            finally:
+                for sig,handler in previous.items():signal.signal(sig,handler)
+
+
+def main():
+    sid=os.environ.get('XDG_SESSION_ID','')
+    if not sid or property(sid,'Remote')!='no' or property(sid,'Seat')!='seat0':
+        raise RuntimeError('Only a local seat0 session may start the managed desktop')
+    if property(sid,'User')!=str(os.getuid()):raise RuntimeError('Session owner mismatch')
+    env=dict(os.environ,XDG_SESSION_TYPE='wayland',XDG_CURRENT_DESKTOP='Hyprland',XDG_SESSION_DESKTOP='Hyprland')
+    gpu=gpu_device(settings().get("gpu","auto"))
+    if gpu:env["AQ_DRM_DEVICES"]=gpu
+    return run_session('/run/hyprlandfiles/session.guard',os.environ['XDG_RUNTIME_DIR'],env)
+
+
+if __name__=='__main__':
+    try:sys.exit(main())
+    except (OSError,RuntimeError,subprocess.SubprocessError) as exc:sys.exit(str(exc))

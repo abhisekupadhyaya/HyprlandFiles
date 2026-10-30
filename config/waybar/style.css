@@ -1,0 +1,16 @@
+/* LeyzS-inspired accent-edged islands; palette from one atomic generation. */
+@import url("@HOME@/.local/state/hyprlandfiles/current/colors.css");
+* { font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; min-height: 0; border: none; }
+window#waybar { background: transparent; color: @foreground; }
+#workspaces, #clock, #backlight, #wireplumber, #network, #battery, #custom-notifications, #tray, #custom-session, #custom-apps {
+    background: @background; border: 1px solid @accent;
+    border-radius: 10px; padding: 0 10px; margin: 0 2px;
+}
+#workspaces { padding: 0 2px; }
+#workspaces button { color: @muted; padding: 0 8px; margin: 3px; border-radius: 7px; background: transparent; }
+#workspaces button.active { color: @onaccent; background: @accent; }
+#workspaces button:hover { color: @foreground; background: @surface; box-shadow: none; }
+#custom-apps, #custom-session { color: @accent; font-weight: 600; }
+#battery.warning { border-width: 2px; }
+#battery.critical { color: @onaccent; background: @accent; font-weight: 700; }
+tooltip { background: @background; color: @foreground; border: 1px solid @accent; border-radius: 8px; }

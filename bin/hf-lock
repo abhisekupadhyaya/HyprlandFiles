@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+"""One hyprlock; mirror confirmation into logind without clearing on a crash."""
+import fcntl
+import os
+from pathlib import Path
+import subprocess
+import time
+
+
+def log(message):
+    subprocess.run(['logger','-t','hf-lock',message],check=False)
+
+
+def property(sid, prop):
+    return subprocess.check_output(['loginctl','show-session',sid,'-p',prop,'--value'],text=True).strip()
+
+
+def session():
+    sid=os.environ.get('XDG_SESSION_ID','')
+    if not sid:
+        sid=subprocess.check_output(['loginctl','show-user',str(os.getuid()),'-p','Display','--value'],text=True).strip()
+    if not sid or property(sid,'User')!=str(os.getuid()) or property(sid,'Remote')!='no' or property(sid,'Seat')!='seat0':
+        raise RuntimeError('Cannot identify the local graphical session')
+    import json
+    r=subprocess.check_output(['busctl','--json=short','call','org.freedesktop.login1','/org/freedesktop/login1',
+        'org.freedesktop.login1.Manager','GetSession','s',sid],text=True)
+    return sid,json.loads(r)['data'][0]
+
+
+def hint(path, value):
+    r=subprocess.run(['busctl','call','org.freedesktop.login1',path,
+        'org.freedesktop.login1.Session','SetLockedHint','b',str(value).lower()],capture_output=True)
+    if r.returncode:
+        log('Could not set logind LockedHint; inspect session permissions')
+
+
+def supervise(path, command):
+    for attempt in range(2):
+        unlocked=False
+        p=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+        with p.stdout:
+            for line in p.stdout:
+                if 'onLockLocked called' in line:
+                    hint(path,True)
+                    log('ext-session-lock confirmed; LockedHint=true')
+                if 'Unlocked, exiting!' in line:
+                    unlocked=True
+        rc=p.wait()
+        if unlocked and rc==0:
+            hint(path,False)
+            log('Authentication unlocked the session; LockedHint=false')
+            return 0
+        log(f'Locker exited without confirmed unlock (exit {rc}, attempt {attempt+1}); not clearing LockedHint')
+        if attempt==0:
+            time.sleep(1)
+    log('Locker recovery exhausted; compositor must remain locked. Use TTY/SSH recovery.')
+    return 1
+
+
+def main():
+    import sys
+    rt=Path(os.environ.get('XDG_RUNTIME_DIR',f'/run/user/{os.getuid()}'))
+    with (rt/'hf-lock.flock').open('w') as lock:
+        try:
+            fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:
+            return 0
+        sid,path=session()
+        log('Lock requested for session '+sid)
+        return supervise(path,['stdbuf','-oL','-eL','hyprlock',*sys.argv[1:]])
+
+
+if __name__=='__main__':
+    try:
+        raise SystemExit(main())
+    except (RuntimeError,OSError,subprocess.SubprocessError) as exc:
+        log('Locker integration failed: '+str(exc))
+        raise SystemExit(1)

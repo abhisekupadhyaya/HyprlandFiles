@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+"""Mouse-accessible desktop actions. Power actions require explicit confirmation."""
+import json,os,subprocess,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+
+def choose(prompt, items):
+    r=subprocess.run(['fuzzel','--dmenu','--prompt',prompt+'  ','--width','48'],input='\n'.join(items)+'\n',text=True,capture_output=True)
+    return r.stdout.strip() if r.returncode==0 else ''
+
+def main():
+    mode=sys.argv[1] if len(sys.argv)>1 else 'help'
+    if mode=='main':
+        choices=['Search applications','Terminal','Files','Wallpaper and colours','Notifications','Audio controls','Network status','Shortcuts and recovery','Session and power']
+        choice=choose('HyprlandFiles',choices)
+        direct={'Search applications':['fuzzel'],'Terminal':['kitty'],'Files':['thunar'],'Notifications':['swaync-client','-t'],'Audio controls':['pavucontrol']}
+        nested={'Wallpaper and colours':'wallpaper','Network status':'network','Shortcuts and recovery':'help','Session and power':'power'}
+        if choice in direct:subprocess.Popen(direct[choice])
+        elif choice in nested:subprocess.Popen([str(ROOT/'bin/hf-menu'),nested[choice]])
+    elif mode=='help':
+        subprocess.Popen(['kitty','--title','HyprlandFiles guide','less',str(ROOT/'docs/keybindings.txt')])
+    elif mode=='power':
+        choice=choose('Session', ['Lock — keep applications running','Log out — return to login','Server mode — log out and hide login','Restart — ends applications and server workloads','Shut down — ends applications and server workloads'])
+        if choice.startswith('Lock'):
+            subprocess.Popen(['/usr/local/bin/hf-lock']);return
+        if not choice:return
+        prompt='Restore login: hf-desktop on (TTY/SSH)' if choice.startswith('Server mode') else 'Save your work first'
+        confirm=choose(prompt, ['Cancel', 'Confirm: '+choice])
+        if not confirm.startswith('Confirm: '):return
+        if choice.startswith('Log out'): subprocess.run(['hyprshutdown'],check=True)
+        elif choice.startswith('Server mode'): subprocess.run(['/usr/local/bin/hyprlandfiles','off'],check=True)
+        elif choice.startswith('Restart'): subprocess.run(['systemctl','reboot'],check=True)
+        elif choice.startswith('Shut down'): subprocess.run(['systemctl','poweroff'],check=True)
+    elif mode=='wallpaper':
+        dirs=[ROOT/'assets',Path.home()/'Pictures/Wallpapers']
+        files=[p for d in dirs if d.is_dir() for p in sorted(d.iterdir()) if p.suffix.lower() in ('.png','.jpg','.jpeg','.webp') and '\n' not in str(p)]
+        names=[f'{i+1}  {p.name}' for i,p in enumerate(files)]
+        choice=choose('Wallpaper',names)
+        if choice in names:subprocess.run([str(ROOT/'bin/hf-theme'),'set',str(files[names.index(choice)])],check=True)
+    elif mode=='brightness':
+        choice=choose('Brightness',['20%','40%','60%','80%','100%'])
+        if choice:subprocess.run([str(ROOT/'bin/hf-control'),'brightness',choice.rstrip('%')],check=True)
+    elif mode=='network':
+        subprocess.Popen(['kitty','--title','HyprlandFiles network status','sh','-c','networkctl status --no-pager; printf "\nRead-only status. Press Enter to close.\n"; read answer'])
+    elif mode=='battery':
+        subprocess.Popen(['kitty','--title','HyprlandFiles battery status','sh','-c','upower --dump; printf "\nPress Enter to close.\n"; read answer'])
+
+if __name__=='__main__':
+    try:main()
+    except (OSError,subprocess.SubprocessError) as exc:sys.exit(str(exc))

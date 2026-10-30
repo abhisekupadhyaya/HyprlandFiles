@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+"""Scale outputs from native EDID dimensions; never log credentials."""
+import json
+from pathlib import Path
+import os
+import subprocess
+import sys
+import syslog
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
+from hf_runtime import settings, output_scale
+
+def main():
+    try:
+        outputs = json.loads(subprocess.check_output(['wlr-randr','--json'],text=True,timeout=5))
+        for output in outputs:
+            if output.get('enabled'):
+                scale = output_scale(output,settings().get('scale','auto'))
+                subprocess.run(['wlr-randr','--output',output['name'],'--scale',str(scale)],check=True,timeout=5)
+                syslog.openlog('hyprlandfiles-login')
+                syslog.syslog(syslog.LOG_INFO,'Output '+output['name']+' scale '+str(scale))
+    except (OSError,ValueError,KeyError,subprocess.SubprocessError) as error:
+        syslog.syslog(syslog.LOG_ERR,'Output scaling failed; retaining current mode: '+str(error))
+    os.execv('/usr/bin/nwg-hello',['nwg-hello','--config','/etc/nwg-hello/nwg-hello.json','--stylesheet','/etc/nwg-hello/nwg-hello.css'])
+
+if __name__=='__main__': main()

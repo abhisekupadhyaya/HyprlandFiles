@@ -1,0 +1,16 @@
+@import url("@HOME@/.local/state/hyprlandfiles/current/colors.css");
+* { font-family: Inter, sans-serif; font-size: 13px; }
+.control-center, .notification-background {
+    background: @background; color: @foreground;
+    border: 1px solid @accent; border-radius: 10px; padding: 12px;
+}
+.control-center { margin: 8px; }
+.notification-row { margin: 6px; }
+.notification { background: @background; color: @foreground; }
+.summary { color: @accent; font-weight: 600; }
+.body { color: @foreground; }
+.time { color: @muted; }
+.widget-title, .widget-dnd { color: @foreground; margin: 8px; }
+button { color: @foreground; background: @surface; border-radius: 8px; border: none; }
+button:hover { color: @onaccent; background: @accent; }
+switch:checked { background: @accent; }

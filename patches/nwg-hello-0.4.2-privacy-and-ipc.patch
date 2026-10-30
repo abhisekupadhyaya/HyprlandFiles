@@ -1,0 +1,61 @@
+--- a/usr/lib/python3/dist-packages/nwg_hello/tools.py
++++ b/usr/lib/python3/dist-packages/nwg_hello/tools.py
+@@ -127,17 +127,32 @@
+         return None
+ 
+ 
++# HyprlandFiles maintenance patch for nwg-hello 0.4.2. Replaces only its IPC transport.
++# Credential redaction follows the current upstream fix; request/response types
++# are sufficient for diagnostics, so no authentication payload is logged.
++import json
++
++
++def _read_exact(client, count):
++    chunks = []
++    while count:
++        chunk = client.recv(count)
++        if not chunk:
++            raise ConnectionError("greetd closed its IPC connection")
++        chunks.append(chunk)
++        count -= len(chunk)
++    return b"".join(chunks)
++
++
+ def greetd(client, json_req, log=False):
+-    eprint(f"greetd: request = {json_req}", log=log)
+-    req = json.dumps(json_req)
+-    client.send(len(req).to_bytes(4, "little") + req.encode("utf-8"))
+-    resp_raw = client.recv(128)
+-    resp_len = int.from_bytes(resp_raw[0:4], "little")
+-    resp_trimmed = resp_raw[4:resp_len + 4].decode()
+-    try:
+-        r = json.loads(resp_trimmed)
+-        eprint(f"greetd: response = {r}", log=log)
+-        return r
+-    except ValueError:
+-        eprint(f"greetd: ValueError")
+-        return {}
++    eprint("greetd: request type = {}".format(json_req.get("type", "unknown")), log=log)
++    request = json.dumps(json_req).encode("utf-8")
++    client.sendall(len(request).to_bytes(4, "little") + request)
++    length = int.from_bytes(_read_exact(client, 4), "little")
++    if not 0 < length <= 1024 * 1024:
++        raise ValueError("greetd IPC response length is outside the allowed bound")
++    response = json.loads(_read_exact(client, length).decode("utf-8"))
++    if not isinstance(response, dict):
++        raise ValueError("greetd IPC response is not an object")
++    eprint("greetd: response type = {}".format(response.get("type", "unknown")), log=log)
++    return response
+--- a/usr/lib/python3/dist-packages/nwg_hello/ui.py
++++ b/usr/lib/python3/dist-packages/nwg_hello/ui.py
+@@ -253,10 +253,6 @@
+             user = self.combo_user.get_active_id()
+             password = self.entry_password.get_text()
+             cmd = self.combo_session.get_active_id()
+-            eprint(f"user: {user}", log=self.log)
+-            eprint(f"password: {'*' * len(password)}", log=self.log)
+-            eprint(f"cmd: {cmd}", log=self.log)
+-            eprint(f"env vars: {self.settings['env-vars']}", log=self.log)
+ 
+             jreq = {"type": "create_session", "username": user}
+             try:

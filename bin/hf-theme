@@ -1,0 +1,254 @@
+#!/usr/bin/python3
+"""Transactional wallpaper/pywal16 generations. No background regeneration at login.
+
+hf-theme set IMAGE [--no-apply] | restore | previous | status
+HF_STATE overrides the state path for offline tests and staging.
+"""
+import argparse
+import ctypes
+import colorsys
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import select
+import subprocess
+import sys
+import tempfile
+import time
+
+PROJECT = Path(__file__).resolve().parents[1]
+STATE = Path(os.environ.get("HF_STATE", Path.home() / ".local/state/hyprlandfiles"))
+POLICY = b"hf-pywal16-3.8.15-colorthief-0.2.1-pillow-13.0.0-policy-v1"
+
+
+def luminance(c):
+    rgb = [int(c[i:i+2], 16) / 255 for i in (1, 3, 5)]
+    v = [x / 12.92 if x <= .04045 else ((x + .055) / 1.055)**2.4 for x in rgb]
+    return sum(a*b for a, b in zip(v, (.2126, .7152, .0722)))
+
+
+def contrast(a, b):
+    x, y = sorted((luminance(a), luminance(b)))
+    return (y + .05) / (x + .05)
+
+
+def blend(a, b, t):
+    return '#' + ''.join(f'{round(int(a[i:i+2],16)*(1-t)+int(b[i:i+2],16)*t):02x}' for i in (1,3,5))
+
+
+def readable(fg, bg, ratio=4.5):
+    # Preserve the wallpaper hue, increasing lightness only when needed.
+    for i in range(101):
+        c = blend(fg, '#ffffff', i/100)
+        if contrast(c, bg) >= ratio:
+            return c
+    raise ValueError("Palette cannot meet contrast requirement")
+
+
+def render(raw, directory):
+    cols = raw['colors']
+    bg = raw['special']['background']
+    bg = blend(bg, '#000000', .4)  # consistent dark surfaces, derived from wallpaper
+    fg = readable(raw['special']['foreground'], bg, 7)
+    candidates = [cols[f'color{i}'] for i in range(1, 15)]
+    accent = max(candidates, key=lambda c: colorsys.rgb_to_hls(*[int(c[i:i+2],16)/255 for i in (1,3,5)])[2])
+    accent = readable(accent, bg, 4.5)
+    muted = readable(blend(fg, bg, .35), bg, 4.5)
+    surface = blend(bg, fg, .06)
+    onaccent = '#000000' if contrast('#000000',accent) >= contrast('#ffffff',accent) else '#ffffff'
+    vals = dict(background=bg, foreground=fg, accent=accent, muted=muted,
+                surface=surface, onaccent=onaccent)
+    (directory/'palette.json').write_text(json.dumps(dict(raw=raw,ui=vals,contrast={
+        'text':contrast(fg,bg),'muted':contrast(muted,bg),'accent':contrast(accent,bg),
+        'selection':contrast(onaccent,accent)}),indent=2)+'\n')
+    css = ''.join(f'@define-color {k} {v};\n' for k,v in vals.items())
+    (directory/'colors.css').write_text(css)
+    lua = f'''-- Generated from pywal16. Replaced as one complete generation.
+hl.config({{
+ general = {{ col = {{ active_border = "rgb({accent[1:]})", inactive_border = "rgb({surface[1:]})" }} }},
+ decoration = {{ shadow = {{ color = "rgba({bg[1:]}bb)" }} }},
+}})
+'''
+    (directory/'hyprland.lua').write_text(lua)
+    kitty = f'background {bg}\nforeground {fg}\ncursor {accent}\nselection_background {accent}\nselection_foreground {onaccent}\n'
+    kitty += ''.join(f'color{i} {cols[f"color{i}"]}\n' for i in range(16))
+    (directory/'kitty.conf').write_text(kitty)
+    (directory/'fuzzel.ini').write_text(f'''[colors]
+background={bg[1:]}ff
+text={fg[1:]}ff
+prompt={accent[1:]}ff
+input={fg[1:]}ff
+match={accent[1:]}ff
+selection={accent[1:]}ff
+selection-text={onaccent[1:]}ff
+selection-match={onaccent[1:]}ff
+border={accent[1:]}ff
+''')
+    wallpaper = directory/'wallpaper.png'
+    (directory/'hyprpaper.conf').write_text(f'''splash = false
+ipc = true
+wallpaper {{
+    monitor =
+    path = {wallpaper}
+    fit_mode = cover
+}}
+''')
+    # Separate file formats are deliberate: these tools still use hyprlang.
+    (directory/'hyprlock-colors.conf').write_text('\n'.join(f'${k} = rgb({v[1:]})' for k,v in vals.items())+'\n')
+    (directory/'greetd.css').write_text(f'''/* Root-reviewed snapshot; greeter never loads user files. */
+window {{ background-color: {bg}; color: {fg}; font-family: Inter; font-size: 16px; }}
+box#body {{ background-color: {surface}; border: 2px solid {accent}; border-radius: 10px; padding: 36px; }}
+entry {{ background-color: {bg}; color: {fg}; border: 1px solid {accent}; border-radius: 8px; padding: 10px; }}
+button {{ background-color: {accent}; color: {onaccent}; border-radius: 8px; padding: 10px 18px; }}
+''')
+
+
+def generate(source):
+    # All writes happen in a private new generation, before changing current.
+    sys.path.insert(0, str(PROJECT/'runtime/lib'))
+    from PIL import Image
+    from pywal import colors
+    Image.MAX_IMAGE_PIXELS = 50_000_000
+    source = source.resolve(strict=True)
+    data = source.read_bytes()
+    if len(data) > 50_000_000:
+        raise ValueError('Image exceeds 50 MB')
+    digest = hashlib.sha256(data+POLICY).hexdigest()[:24]
+    dest = STATE/'generations'/digest
+    if (dest/'complete').is_file():
+        return dest
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    # Destination names only contain hashes; no user input enters shell or config.
+    if dest.exists():
+        raise ValueError('Incomplete generation exists; inspect it before retrying: '+str(dest))
+    dest.mkdir(mode=0o700)
+    with Image.open(source) as im:
+        if im.width*im.height > Image.MAX_IMAGE_PIXELS:
+            raise ValueError('Image too large')
+        im = im.convert('RGB')
+        im.save(dest/'wallpaper.png')
+        im.thumbnail((480,480))
+        im.save(dest/'analysis.png')
+    raw = colors.get(str(dest/'analysis.png'), backend='colorthief',
+                     cache_dir=str(dest/'wal'), c16='lighten')
+    raw['wallpaper'] = str(dest/'wallpaper.png')
+    render(raw, dest)
+    run(['fuzzel','--config',str(dest/'fuzzel.ini'),'--check-config'])
+    (dest/'source.json').write_text(json.dumps(dict(source=str(source),sha256=hashlib.sha256(data).hexdigest(),policy=POLICY.decode()),indent=2)+'\n')
+    (dest/'complete').write_text('ok\n')
+    return dest
+
+
+def run(argv, check=True):
+    r = subprocess.run(argv, capture_output=True, text=True, timeout=20)
+    if check and r.returncode:
+        raise RuntimeError(' '.join(argv[:3])+': '+r.stderr.strip()+r.stdout.strip())
+    return r
+
+
+def link(name, target):
+    tmp = STATE/(name+'.new')
+    tmp.unlink(missing_ok=True)
+    tmp.symlink_to(target)
+    os.replace(tmp,STATE/name)
+
+
+def select_generation(dest):
+    old = (STATE/'current').resolve() if (STATE/'current').exists() else None
+    if old == dest:
+        return
+    if old:
+        link('previous',old)
+    link('current',dest)
+
+
+def apply():
+    # Called only on explicit wallpaper changes; login simply reads cached files.
+    if not os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
+        return
+    wait_for_wallpaper_socket()
+    failures=[]
+    cmds=[['hyprctl','reload','config-only'],
+          ['hyprctl','hyprpaper','wallpaper',','+str((STATE/'current/wallpaper.png').resolve())+',cover'],
+          ['systemctl','--user','reload','waybar.service'],
+          ['swaync-client','--reload-config'],['swaync-client','--reload-css']]
+    for cmd in cmds:
+        r=run(cmd,check=False)
+        if r.returncode:
+            failures.append(' '.join(cmd[:3])+': '+r.stderr.strip()+r.stdout.strip())
+    # Kitty documents SIGUSR1 as config reload; no remote-control socket enabled.
+    for p in Path('/proc').glob('[0-9]*'):
+        try:
+            if p.stat().st_uid == os.getuid() and (p/'comm').read_text().strip() == 'kitty':
+                os.kill(int(p.name),signal.SIGUSR1)
+        except (FileNotFoundError,PermissionError,ProcessLookupError):
+            pass
+    if failures:
+        raise RuntimeError('Palette saved, but live reload failed:\n'+'\n'.join(failures))
+
+
+def wait_for_wallpaper_socket():
+    """Wait for the native helper's socket using inotify, with a hard deadline."""
+    rt=Path(os.environ.get('XDG_RUNTIME_DIR',f'/run/user/{os.getuid()}'))
+    path=rt/'hypr'/os.environ['HYPRLAND_INSTANCE_SIGNATURE']/'.hyprpaper.sock'
+    if path.is_socket():return
+    libc=ctypes.CDLL('libc.so.6',use_errno=True)
+    fd=libc.inotify_init1(os.O_NONBLOCK|os.O_CLOEXEC)
+    if fd<0:raise OSError(ctypes.get_errno(),'inotify_init1')
+    try:
+        if libc.inotify_add_watch(fd,os.fsencode(path.parent),0x100|0x80)<0:
+            raise OSError(ctypes.get_errno(),'wallpaper readiness watch')
+        deadline=time.monotonic()+10
+        while not path.is_socket():
+            remaining=deadline-time.monotonic()
+            if remaining<=0 or not select.select([fd],[],[],max(0,remaining))[0]:
+                raise RuntimeError('hyprpaper IPC was not ready within 10 seconds; inspect its service logs')
+            os.read(fd,65536)
+    finally:
+        os.close(fd)
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('action',choices=('set','restore','previous','status'))
+    parser.add_argument('image',nargs='?',type=Path)
+    parser.add_argument('--no-apply',action='store_true')
+    args=parser.parse_args()
+    STATE.mkdir(parents=True,exist_ok=True,mode=0o700)
+    with (STATE/'theme.lock').open('w') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        if args.action=='set':
+            if not args.image:
+                parser.error('set needs an image')
+            dest=generate(args.image)
+            select_generation(dest)
+        elif args.action=='previous':
+            dest=(STATE/'previous').resolve(strict=True)
+            select_generation(dest)
+        elif not (STATE/'current/complete').is_file():
+            raise ValueError('No cached theme. Run hf-theme set IMAGE first.')
+        if args.action!='status' and not args.no_apply:
+            try:
+                apply()
+            except (RuntimeError,OSError,subprocess.SubprocessError):
+                # A failed live update must not strand half the desktop on a
+                # new generation. Return every consumer to the previous one.
+                if args.action in ('set','previous') and (STATE/'previous/complete').is_file():
+                    link('current',(STATE/'previous').resolve())
+                    try:
+                        apply()
+                    except (RuntimeError,OSError,subprocess.SubprocessError) as rollback_error:
+                        print('Live rollback also needs attention: '+str(rollback_error),file=sys.stderr)
+                raise
+        print(json.dumps(dict(generation=str((STATE/'current').resolve()),
+                              palette=json.loads((STATE/'current/palette.json').read_text())['ui']),indent=2))
+
+
+if __name__=='__main__':
+    try:
+        main()
+    except (ValueError,RuntimeError,OSError,subprocess.SubprocessError) as exc:
+        sys.exit(str(exc))

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Run from the real Hyprland logind session, once even after compositor recovery.
+exec flock -n "$XDG_RUNTIME_DIR/hf-polkit.lock" /usr/libexec/hyprpolkitagent
