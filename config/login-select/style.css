@@ -1,0 +1,64 @@
+/* Reviewed pywal16 snapshot for the selected royal-blue image. */
+@define-color bg #04060a;
+@define-color fg #c1c1c3;
+@define-color surface #0f1115;
+@define-color accent #5278bb;
+@define-color muted #7f8082;
+* { font-family: Inter, sans-serif; font-size: 15px; }
+window {
+    background-color: @bg;
+    color: @fg;
+    background-image: linear-gradient(to right, alpha(@bg, 0.08), alpha(@bg, 0.26)),
+                      url("file:///etc/greetd/hyprlandfiles-wallpaper.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+#scene { padding: 72px 80px; }
+#brand { font-size: 16px; font-weight: 600; letter-spacing: 7px; color: @fg; }
+#welcome-label { color: @fg; font-size: 18px; font-weight: 400; margin-top: 30px; }
+#clock-label { color: @fg; font-size: 96px; font-weight: 300; letter-spacing: -4px; }
+#date-label { color: @fg; font-size: 16px; margin-top: 8px; }
+#form-wrapper {
+    background-color: alpha(@bg, 0.89);
+    border-left: 1px solid alpha(@accent, 0.3);
+}
+#sign-in-title { font-size: 26px; font-weight: 600; margin-bottom: 30px; }
+#form-label { font-size: 13px; color: @fg; margin-bottom: 7px; }
+entry, combobox button {
+    color: @fg;
+    background-color: @surface;
+    background-image: none;
+    border: 1px solid alpha(@accent, 0.35);
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-height: 22px;
+    box-shadow: none;
+    text-shadow: none;
+}
+entry:focus, combobox button:focus {
+    border-color: @accent;
+    box-shadow: 0 0 0 2px alpha(@accent, 0.18);
+}
+entry selection { background-color: @accent; color: @bg; }
+checkbutton { font-size: 12px; color: @muted; margin-top: 10px; }
+checkbutton check { border: 1px solid @accent; border-radius: 4px; background: @surface; }
+checkbutton check:checked { background-color: @accent; color: @bg; }
+#login-button {
+    background: @accent;
+    color: @bg;
+    border: 1px solid @accent;
+    border-radius: 12px;
+    padding: 14px;
+    font-weight: 600;
+    box-shadow: none;
+    text-shadow: none;
+    margin-top: 16px;
+}
+#login-button:hover { background-color: shade(@accent, 1.12); }
+#login-button:focus { outline: 2px solid @fg; outline-offset: 3px; }
+#message { color: @fg; font-size: 13px; min-height: 24px; margin-top: 12px; }
+#session-hint { color: @muted; font-size: 12px; margin-top: 28px; }
+menu { color: @fg; background: @surface; border: 1px solid @accent; border-radius: 10px; padding: 6px; }
+menuitem { padding: 12px; border-radius: 6px; }
+menuitem:hover { background: @accent; color: @bg; }

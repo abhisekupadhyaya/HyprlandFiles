@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=HyprlandFiles Shortcuts and Recovery
+Comment=Keyboard controls and safe workstation/server recovery
+Exec=/usr/local/bin/hf-menu help
+Icon=preferences-desktop-keyboard-shortcuts
+Terminal=false
+Categories=Utility;

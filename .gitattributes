@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.png binary
+# Unified diff context lines intentionally contain one space.
+*.patch -whitespace

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Owned HyprlandFiles layout using nwg-hello's documented template interface. -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="main-window">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkBox">
+            <property name="name">scene</property>
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="hexpand">True</property>
+            <property name="valign">center</property>
+            <child><object class="GtkLabel"><property name="name">brand</property><property name="visible">True</property><property name="label">HYPRLANDFILES</property><property name="xalign">0</property></object></child>
+            <child><object class="GtkLabel" id="lbl-welcome"><property name="visible">True</property><property name="xalign">0</property></object></child>
+            <child><object class="GtkLabel" id="lbl-clock"><property name="visible">True</property><property name="xalign">0</property></object></child>
+            <child><object class="GtkLabel" id="lbl-date"><property name="visible">True</property><property name="xalign">0</property></object></child>
+          </object>
+          <packing><property name="expand">True</property><property name="fill">True</property></packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="form-wrapper">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="vexpand">True</property>
+                <property name="width-request">340</property>
+                <property name="margin-start">48</property>
+                <property name="margin-end">48</property>
+                <child><object class="GtkLabel"><property name="name">sign-in-title</property><property name="visible">True</property><property name="label">Sign in</property><property name="xalign">0</property></object></child>
+                <child><object class="GtkBox" id="avatar-wrapper"><property name="visible">False</property></object></child>
+                <child><object class="GtkLabel" id="lbl-user"><property name="visible">True</property><property name="xalign">0</property></object></child>
+                <child><object class="GtkComboBoxText" id="combo-user"><property name="visible">True</property><property name="can-focus">True</property></object></child>
+                <child><object class="GtkLabel" id="lbl-password"><property name="visible">True</property><property name="xalign">0</property><property name="margin-top">22</property></object></child>
+                <child><object class="GtkEntry" id="entry-password"><property name="visible">True</property><property name="can-focus">True</property><property name="placeholder-text">Password</property><property name="visibility">False</property></object></child>
+                <child><object class="GtkCheckButton" id="cb-show-password"><property name="visible">True</property><property name="can-focus">True</property><property name="active">False</property></object></child>
+                <child><object class="GtkButton" id="btn-login"><property name="visible">True</property><property name="can-focus">True</property><property name="label">Sign in</property></object></child>
+                <child><object class="GtkLabel" id="lbl-message"><property name="name">message</property><property name="visible">True</property><property name="wrap">True</property><property name="xalign">0</property></object></child>
+                <child><object class="GtkLabel"><property name="name">session-hint</property><property name="visible">True</property><property name="label">Hyprland</property><property name="xalign">0</property></object></child>
+              </object>
+            </child>
+          </object>
+          <packing><property name="expand">False</property><property name="fill">True</property></packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <!-- One fixed desktop. These native objects remain present for the frontend,
+       but are deliberately hidden/non-focusable; no invisible tab stops. -->
+  <object class="GtkLabel" id="lbl-session"><property name="visible">False</property></object>
+  <object class="GtkComboBoxText" id="combo-session"><property name="visible">False</property><property name="can-focus">False</property></object>
+  <object class="GtkButton" id="btn-sleep"><property name="visible">False</property><property name="can-focus">False</property><property name="sensitive">False</property></object>
+  <object class="GtkButton" id="btn-restart"><property name="visible">False</property><property name="can-focus">False</property><property name="sensitive">False</property></object>
+  <object class="GtkButton" id="btn-poweroff"><property name="visible">False</property><property name="can-focus">False</property><property name="sensitive">False</property></object>
+</interface>

@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+.cache/
+bundles/
+build/
+dist/
+backups/
+reports/
+*.deb
+*.whl
+.env
+.env.*
+*.pem
+*.key
+settings.local.json

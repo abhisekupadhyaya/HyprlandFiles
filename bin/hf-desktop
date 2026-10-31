@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+"""hyprlandfiles status|on|off. Off requests graceful logout, never forces apps."""
+import json
+import os
+import socket
+import subprocess
+import sys
+
+
+def ask(cmd):
+    with socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as s:
+        s.settimeout(10)
+        s.connect('/run/hyprlandfiles/control.sock')
+        s.sendall((cmd+'\n').encode())
+        result=json.loads(s.makefile().readline())
+    if not result.get('ok'):
+        raise RuntimeError(result.get('error','Controller request failed'))
+    return result
+
+
+def off():
+    st=ask('status')
+    sessions=st.get('desktop_sessions') or []
+    if not sessions:
+        ask('off')
+        print('Server mode requested. Open the lid after closing it to show login again.')
+        return
+    if not os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
+        raise RuntimeError('Run Server mode from inside the desktop; remote termination is intentionally not provided.')
+    # hyprshutdown warns and requests applications to exit; no timeout force kill.
+    # If cancelled, desktop stays alive and the owner can use hyprlandfiles on.
+    ask('off')
+    r=subprocess.run(['hyprshutdown'],check=False)
+    if r.returncode:
+        ask('on')
+        raise RuntimeError('Logout did not complete; restored automatic login-screen policy.')
+
+
+def main():
+    cmd=sys.argv[1] if len(sys.argv)==2 else 'help'
+    if cmd=='status':
+        print(json.dumps(ask('status'),indent=2))
+    elif cmd=='on':
+        ask('on')
+        print('Graphical login requested on the local display. Existing desktop sessions are preserved.')
+    elif cmd=='off':
+        off()
+    else:
+        print(__doc__)
+
+
+if __name__=='__main__':
+    try: main()
+    except (OSError,RuntimeError,subprocess.SubprocessError) as exc: sys.exit(str(exc))

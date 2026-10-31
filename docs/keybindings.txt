@@ -1,0 +1,48 @@
+HYPRLANDFILES — SHORTCUTS AND RECOVERY
+
+Super acts like Command; Alt acts like Option. Natural scrolling is enabled.
+Super+Space                 Search apps
+Super+Ctrl+Space            Main menu (also click Apps in the bar)
+Super+Return / Super+E      Terminal / files
+Super+K or Super+/          This guide
+Super+C/V                   Copy/paste; Kitty gets Ctrl+Shift, GUI apps Ctrl
+Super+W/T/N                 Close tab / new tab / new window (application handles)
+Super+F                     Find; Kitty scrollback
+Super+A/X/S/Z/L             GUI select all / cut / save / undo / address field
+Super+Shift+Z               GUI redo
+Super+Q                     Close focused window gracefully
+Super+Ctrl+Q / Super+Ctrl+L Lock
+Super+Escape / Super+Shift+E Session/power menu
+Super+Alt+W / Super+Alt+N   Wallpaper / notifications
+Super+Ctrl+F                Fullscreen
+Super+Alt+T                 Toggle floating
+Super+J                     Toggle split
+Super+Tab / Super+Shift+Tab Next / previous window
+Alt+Tab / Alt+Shift+Tab      Linux window switch aliases
+Ctrl+Left/Right             Previous / next workspace
+Alt+Left/Right              Previous / next word
+Super+Arrows                Focus tile
+Super+1…0                   Workspaces 1…10
+Super+Ctrl+1…0              Move window to workspace
+Super+left/right drag       Move / resize window
+Super+Shift+3 / Super+Shift+4 Full / region screenshot
+Print                       Region screenshot to clipboard
+Brightness/volume/media    Physical keys, with transient feedback
+
+LOCK keeps apps. LOG OUT closes apps and returns to login.
+SERVER MODE closes apps and hides login; save work first.
+Laptop profile: close/open lid brings login back. Desktop: hf-desktop on in TTY/SSH.
+RESTART/SHUT DOWN end apps and server workloads; explicit confirmation required.
+
+Ctrl+Alt+F2: authenticated recovery TTY. Ctrl+Alt+F7: managed login/desktop.
+hf-desktop status          Inspect controller without changing session
+hf-desktop on              Request login (also from existing SSH)
+hf-desktop off             Graceful Server mode from desktop; never force-app-kill
+hf-theme set IMAGE         Generate/cache coordinated wallpaper colours
+hf-theme previous          Restore previous palette
+hf-theme status            Inspect palette
+
+Logs: journalctl -b -u hf-desktopd; systemctl --user --failed
+Doctor: ./install.sh doctor (from checkout; no service changes)
+Rollback: docs/rollback.md and the exact BACKUP path printed at installation.
+Never send passwords or unredacted private logs to a public issue.

@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+"""Private greeter bus; native labwc lifetime follows the login client."""
+import os
+from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
+from hf_runtime import settings, gpu_device
+run=Path('/run/hyprlandfiles')
+if (run/'control.sock').is_socket() and not (run/'greeter-wanted').exists():
+    os.execv('/usr/bin/sleep',['sleep','20'])
+gpu=gpu_device(settings().get('gpu','auto'))
+env=dict(os.environ,XDG_SESSION_TYPE='wayland',XDG_CURRENT_DESKTOP='labwc',
+         LIBSEAT_BACKEND='logind',LABWC_UPDATE_ACTIVATION_ENV='0',GDK_BACKEND='wayland')
+if gpu: env['WLR_DRM_DEVICES']=gpu
+for key in ('GDK_SCALE','GDK_DPI_SCALE'): env.pop(key,None)
+os.execve('/usr/bin/dbus-run-session',['dbus-run-session','--','/usr/bin/labwc','-C','/etc/greetd/hyprlandfiles-labwc','-S','/usr/local/bin/hf-greeter-ui'],env)

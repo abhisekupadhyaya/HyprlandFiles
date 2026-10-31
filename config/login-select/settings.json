@@ -1,0 +1,32 @@
+{
+  "session_dirs": [],
+  "custom_sessions": [
+    {
+      "name": "Hyprland",
+      "exec": "/usr/local/bin/hf-session"
+    }
+  ],
+  "monitor_nums": [],
+  "form_on_monitors": [],
+  "delay_secs": 0,
+  "cmd-sleep": "/usr/bin/false",
+  "cmd-reboot": "/usr/bin/false",
+  "cmd-poweroff": "/usr/bin/false",
+  "gtk-theme": "Adwaita",
+  "gtk-icon-theme": "Adwaita",
+  "gtk-cursor-theme": "Adwaita",
+  "prefer-dark-theme": true,
+  "template-name": "hyprlandfiles.glade",
+  "time-format": "%H:%M",
+  "date-format": "%A, %d %B",
+  "layer": "overlay",
+  "keyboard-mode": "exclusive",
+  "lang": "en_US",
+  "avatar-show": false,
+  "avatar-size": 100,
+  "avatar-border-width": 1,
+  "avatar-border-color": "#5278bb",
+  "avatar-corner-radius": 12,
+  "avatar-circle": false,
+  "env-vars": []
+}

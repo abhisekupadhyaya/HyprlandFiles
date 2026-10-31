@@ -1,0 +1,56 @@
+#!/usr/bin/python3
+"""Volume and native logind backlight control, without sudo/udev changes."""
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
+from hf_runtime import backlight
+
+def out(argv):
+    return subprocess.check_output(argv,text=True).strip()
+
+def main():
+    device, action = sys.argv[1:]
+    if device=='volume':
+        if action=='mute': out(['wpctl','set-mute','@DEFAULT_AUDIO_SINK@','toggle'])
+        elif action in ('up','down'): out(['wpctl','set-volume','-l','1','@DEFAULT_AUDIO_SINK@','5%+' if action=='up' else '5%-'])
+        else: raise ValueError('Unknown volume action')
+        value=out(['wpctl','get-volume','@DEFAULT_AUDIO_SINK@'])
+        percent=round(float(re.search(r'[0-9.]+',value).group())*100)
+        title='Muted' if 'MUTED' in value else 'Volume'
+    elif device=='brightness':
+        pref=Path.home()/'.config/hyprlandfiles/settings.json'
+        name=json.loads(pref.read_text()).get('backlight_device') if pref.is_file() else None
+        if name and not re.fullmatch(r'[A-Za-z0-9_-]+',name): raise ValueError('Invalid backlight device')
+        path=Path('/sys/class/backlight')/name if name else backlight()
+        maximum=int((path/'max_brightness').read_text()); current=int((path/'brightness').read_text())
+        saved=Path(os.environ['XDG_RUNTIME_DIR'])/'hf-brightness.json'
+        if action=='dim':
+            if not saved.exists(): saved.write_text(json.dumps({'device':path.name,'value':current}))
+            value=round(maximum*.1)
+        elif action=='restore':
+            if not saved.exists(): return
+            old=json.loads(saved.read_text())
+            if old['device']!=path.name: raise ValueError('Backlight changed since dimming')
+            value=old['value']
+        elif action in ('up','down'): value=current+max(1,round(maximum*.05))*(1 if action=='up' else -1)
+        elif action in ('20','40','60','80','100'): value=round(maximum*int(action)/100)
+        else: raise ValueError('Unknown brightness action')
+        sid=os.environ.get('XDG_SESSION_ID') or out(['loginctl','show-user',str(os.getuid()),'-p','Display','--value'])
+        props=dict(x.split('=',1) for x in out(['loginctl','show-session',sid,'-p','User','-p','Seat','-p','Remote']).splitlines())
+        if props.get('User')!=str(os.getuid()) or props.get('Seat')!='seat0' or props.get('Remote')!='no': raise ValueError('Brightness requires a local seat0 session')
+        session=json.loads(out(['busctl','--json=short','call','org.freedesktop.login1','/org/freedesktop/login1','org.freedesktop.login1.Manager','GetSession','s',sid]))['data'][0]
+        value=max(1,min(maximum,value))
+        out(['busctl','call','org.freedesktop.login1',session,'org.freedesktop.login1.Session','SetBrightness','ssu','backlight',path.name,str(value)])
+        if action=='restore': saved.unlink()
+        if action in ('restore','dim'): return
+        percent=round(value/maximum*100); title='Brightness'
+    else: raise ValueError('Unknown control')
+    subprocess.run(['notify-send','-a','HyprlandFiles','-h','string:x-canonical-private-synchronous:'+device,'-h','int:transient:1','-h','int:value:'+str(percent),'-t','1200',title,str(percent)+'%'],check=False)
+
+if __name__=='__main__':
+    try: main()
+    except (OSError,ValueError,subprocess.SubprocessError) as e: sys.exit(str(e))

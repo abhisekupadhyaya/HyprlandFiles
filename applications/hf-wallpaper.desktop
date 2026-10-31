@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=HyprlandFiles Wallpaper and Colours
+Comment=Choose a still wallpaper and matching pywal16 palette
+Exec=/usr/local/bin/hf-menu wallpaper
+Icon=preferences-desktop-wallpaper
+Terminal=false
+Categories=Settings;

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "version": "0.1.0-rc.2",
+  "date": "2026-10-31",
+  "status": "release candidate; clean-machine and physical gates open",
+  "automated_tests": {
+    "passed": 94,
+    "scope": "isolated filesystem, lifecycle, IPC, hardware selection, palette and activation safety",
+    "live_install": false
+  },
+  "native_parsers": {
+    "Hyprland 0.57.0": "desktop auto scale and laptop-server scale 2 pass",
+    "Fuzzel": "both generated config profiles pass",
+    "systemd": "controller unit syntax passes with private executable path; unrelated host xfs_scrub CPUAccounting deprecation warnings observed"
+  },
+  "greeter_build": {
+    "version": "0.4.2-1+hf1",
+    "two_builds_identical": true,
+    "sha256": "5f9bd607b00c3fef2da6918490d10bf612f42a3a9a6d3fda11dadb024b3e3976"
+  },
+  "package_simulation": {
+    "environment": "existing compatible Ubuntu installation; not a clean image",
+    "exit_code": 0,
+    "removals": 0,
+    "install_executed": false
+  },
+  "key_fingerprint_verified": "A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E",
+  "public_source_audit": "no credential patterns or original private machine identifiers found; local state and caches excluded",
+  "not_verified": [
+    "Fresh Ubuntu Server installation of the portable release through APT",
+    "Physical authentication, TTY, lid/reboot and complete session acceptance of portable runtime paths",
+    "Broader GPU, external monitor and sustained thermal/battery validation",
+    "GitHub CI run before first push",
+    "Off-machine backup and public distribution of the prepared recovery archive"
+  ],
+  "recovery_kit": {
+    "artifacts": 33,
+    "locked_desktop_packages": 28,
+    "artifact_hashes_verified": true,
+    "git_manifest": "locks/recovery-ubuntu-26.04-amd64.json",
+    "binary_location": "retained separately from Git",
+    "archive_reproducibility": "isolated fixture test passes; real archive extraction checks are recorded outside the source tree",
+    "fresh_install_executed": false
+  },
+  "project_standards": {
+    "maintainer_policy": "MAINTAINERS.md",
+    "release_policy": "docs/releases.md",
+    "roadmap": "ROADMAP.md",
+    "code_ownership": ".github/CODEOWNERS",
+    "release_input_inventory": "docs/release-inputs.spdx.json",
+    "remote_protections": "not changed; owner configuration required"
+  },
+  "dark_appearance": {
+    "user_preferences": "prefer-dark; GTK Adwaita-dark",
+    "portal_readback": "org.freedesktop.appearance color-scheme = 1",
+    "vscode_default": "OS detection; installed dark theme ID chosen from package metadata when available",
+    "native_settings_validation": "Gio memory-backend tests, plus live readback of the two selected preferences",
+    "fresh_vm_validation": false
+  }
+}

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=HyprlandFiles Session and Power
+Comment=Lock, log out, server mode, restart or shut down
+Exec=/usr/local/bin/hf-menu power
+Icon=system-log-out
+Terminal=false
+Categories=System;

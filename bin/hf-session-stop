@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+"""Stop affected desktop units; report completion to the Lua hook."""
+import signal
+import subprocess
+import sys
+
+if sys.argv[1:] not in ([],['--probe']):sys.exit('Only --probe is supported')
+# Hyprland auto-reaps children. Give this private worker normal child-wait
+# semantics; never change the compositor's signal handling.
+signal.signal(signal.SIGCHLD,signal.SIG_DFL)
+command=(['/usr/bin/true'] if sys.argv[1:] else
+         ['/usr/bin/systemctl','--user','stop','swaync.service','thunar.service',
+          'xdg-desktop-portal-gtk.service',
+          'xdg-desktop-portal-hyprland.service'])
+try:
+    result=subprocess.run(command,text=True,capture_output=True,timeout=10)
+    if result.returncode:
+        print('HyprlandFiles: helper shutdown failed: '+result.stderr.strip(),file=sys.stderr,flush=True)
+    ok=result.returncode==0
+except (OSError,subprocess.TimeoutExpired) as exc:
+    print('HyprlandFiles: helper shutdown failed: '+str(exc),file=sys.stderr,flush=True)
+    ok=False
+# The pipe reaches EOF only when this worker finishes. pclose cannot provide a
+# dependable status under Hyprland's reaper, so use this explicit result token.
+print('OK' if ok else 'FAIL',flush=True)
+sys.exit(0 if ok else 1)

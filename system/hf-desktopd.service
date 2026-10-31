@@ -1,0 +1,26 @@
+[Unit]
+Description=hf desktop lifecycle (lid-aware greeter control)
+Documentation=file:/usr/local/share/hyprlandfiles/docs/lifecycle.md
+After=systemd-logind.service systemd-user-sessions.service
+Wants=systemd-logind.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/local/share/hyprlandfiles/controller/desktopd.py
+Restart=on-failure
+RestartSec=2
+WatchdogSec=120
+RuntimeDirectory=hyprlandfiles
+RuntimeDirectoryMode=0755
+RuntimeDirectoryPreserve=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+LockPersonality=yes
+RestrictRealtime=yes
+
+[Install]
+WantedBy=multi-user.target
