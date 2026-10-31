@@ -4,7 +4,7 @@
   "date": "2026-10-31",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 93,
+    "passed": 94,
     "scope": "isolated filesystem, lifecycle, IPC, hardware selection, palette and activation safety",
     "live_install": false
   },
@@ -53,7 +53,7 @@
   "dark_appearance": {
     "user_preferences": "prefer-dark; GTK Adwaita-dark",
     "portal_readback": "org.freedesktop.appearance color-scheme = 1",
-    "vscode_default": "Default Dark Modern; automatic OS colour detection",
+    "vscode_default": "OS detection; installed dark theme ID chosen from package metadata when available",
     "native_settings_validation": "Gio memory-backend tests, plus live readback of the two selected preferences",
     "fresh_vm_validation": false
   }

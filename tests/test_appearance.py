@@ -22,13 +22,22 @@ class Files(unittest.TestCase):
             home=Path(d);code=home/'.config/Code/User/settings.json'
             ops=appearance.file_operations(ROOT,home)
             fresh=next(x for x in ops if x['path']==str(code))
-            self.assertEqual(json.loads(fresh['data'])['workbench.colorTheme'],'Default Dark Modern')
+            self.assertTrue(json.loads(fresh['data'])['window.autoDetectColorScheme'])
             code.parent.mkdir(parents=True);code.write_text('// private custom settings\n{"editor.fontSize":16,}\n')
             self.assertFalse(any(x['path']==str(code) for x in appearance.file_operations(ROOT,home)))
 
     def test_missing_settings_section_is_added_without_losing_existing_data(self):
         merged=appearance.merge_settings('[Other]\na=1\n',{'gtk-application-prefer-dark-theme':'1'})
         self.assertEqual(merged,'[Other]\na=1\n[Settings]\ngtk-application-prefer-dark-theme=1\n')
+
+    def test_vscode_theme_names_are_detected_not_assumed(self):
+        with tempfile.TemporaryDirectory() as d:
+            themes=Path(d)/'package.json'
+            template='{"window.autoDetectColorScheme":true}'
+            self.assertNotIn('workbench.colorTheme',json.loads(appearance.code_defaults(template,themes)))
+            for theme in ('Dark Modern','Default Dark Modern','Future Dark'):
+                themes.write_text(json.dumps({'contributes':{'themes':[{'id':theme,'uiTheme':'vs-dark'}]}}))
+                self.assertEqual(json.loads(appearance.code_defaults(template,themes))['workbench.colorTheme'],theme)
 
 try:
     from gi.repository import Gio

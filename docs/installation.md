@@ -96,11 +96,14 @@ Run doctor and the full physical checklist before freezing additional tools.
 
 The user phase sets org.gnome.desktop.interface color-scheme to prefer-dark and
 GTK theme to Adwaita-dark. It merges GTK3/4 settings while preserving other keys,
-sections and comments, and seeds fresh optional VS Code settings with Dark Modern
-and OS detection. Existing VS Code JSON/JSONC preferences and profiles are kept.
+sections and comments, and seeds fresh optional VS Code settings with OS detection and an installed dark theme. Existing VS Code JSON/JSONC preferences and profiles are kept.
 The GTK Settings portal publishes the preference to supporting applications;
 apps with explicit overrides or their own theme mechanisms remain app-specific.
 No global GTK_THEME environment override, new theme manager, desktop environment,
 service restart or logout is needed. Some already-running legacy apps read their
 GTK settings only at startup and apply them when next opened. The shell,
 terminal, launcher and notifications keep their wallpaper-generated palette.
+
+VS Code dark theme identifiers are detected from its installed built-in theme
+metadata. If VS Code is not installed yet, only OS colour-scheme detection is
+seeded; the app chooses its own compatible dark theme when installed later.

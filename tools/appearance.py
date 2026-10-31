@@ -12,6 +12,16 @@ SCHEMA='org.gnome.desktop.interface'
 DESIRED={'color-scheme':'prefer-dark','gtk-theme':'Adwaita-dark'}
 
 
+def code_defaults(template, themes=Path('/usr/share/code/resources/app/extensions/theme-defaults/package.json')):
+    defaults=json.loads(template)
+    if themes.is_file():
+        metadata=json.loads(themes.read_text())
+        dark=[x['id'] for x in metadata.get('contributes',{}).get('themes',[]) if x.get('uiTheme')=='vs-dark' and isinstance(x.get('id'),str)]
+        choice=next((name for name in ('Dark Modern','Default Dark Modern') if name in dark),next(iter(dark),None))
+        if choice:defaults.update({'workbench.colorTheme':choice,'workbench.preferredDarkColorTheme':choice})
+    return json.dumps(defaults,indent=2)+'\n'
+
+
 def merge_settings(text, updates):
     """Preserve unrelated keys, sections and comments in existing GTK files."""
     parser=configparser.ConfigParser(interpolation=None,strict=True)
@@ -47,7 +57,7 @@ def file_operations(root, home):
     # Seed VS Code without requiring/installing the application. Existing explicit
     # application settings (including JSONC and profiles) remain the user's choice.
     source=root/'config/Code/User/settings.json';target=home/'.config/Code/User/settings.json'
-    if not target.exists() and not target.is_symlink():ops.append(operation(target,source.read_text()))
+    if not target.exists() and not target.is_symlink():ops.append(operation(target,code_defaults(source.read_text())))
     return ops
 
 

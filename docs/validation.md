@@ -28,7 +28,7 @@ outputs; Unix socket readiness uses a private temporary socket.
 
 Native Lua parser, deterministic patched package builds and locked wheel checks
 are additional local integration checks. Automated results are recorded in
-[release-preparation.json](release-preparation.json): 93 tests passed, native Lua
+[release-preparation.json](release-preparation.json): 94 tests passed, native Lua
 and Fuzzel validation passed for both profiles, controller unit syntax passed,
 and two patched greeter builds were identical; CI execution is not claimed until GitHub runs it.
 
