@@ -2,11 +2,11 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "HyprlandFiles 0.1.0-rc.1 retained release inputs",
-  "documentNamespace": "https://github.com/abhisekupadhyaya/HyprlandFiles/spdx/97a23284-ddd9-55b9-b6b4-c5a3ff23360f",
+  "name": "HyprlandFiles 0.1.0-rc.2 retained release inputs",
+  "documentNamespace": "https://github.com/abhisekupadhyaya/HyprlandFiles/spdx/a5aca017-c54d-578d-84dd-575c2d1a64fb",
   "creationInfo": {
     "creators": [
-      "Tool: HyprlandFiles-sbom-0.1.0-rc.1"
+      "Tool: HyprlandFiles-sbom-0.1.0-rc.2"
     ],
     "created": "2026-10-30T18:00:00Z"
   },

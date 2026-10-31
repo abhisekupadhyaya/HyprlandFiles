@@ -55,3 +55,21 @@ installation is repaired. Never unmask just to hide the installation failure.
 No logind restart is required by rollback; restored lid policy takes effect at
 next operator-chosen boot. Do not reboot with a closed lid until the restored
 power policy is understood.
+
+
+## Desktop appearance preferences
+
+GTK/VS Code files installed by the main user phase are in its normal file
+snapshot. The two desktop GSettings preferences have a separate per-key snapshot
+(the full dconf database is not read or copied). The appearance phase prints:
+
+```
+python3 tools/appearance.py rollback /exact/appearance/preferences/SNAPSHOT
+```
+
+Run it as the desktop user without sudo. It restores original values or resets
+originally unset keys, refuses later unrelated edits, and leaves other desktop
+preferences alone. If the standalone appearance command also changed files,
+that same rollback restores their permission-preserving file snapshot too. This
+appearance-only rollback can run while applications remain open. For complete
+uninstall rollback, restore these preferences before the main user/root snapshots.

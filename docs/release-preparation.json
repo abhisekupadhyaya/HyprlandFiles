@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "version": "0.1.0-rc.1",
-  "date": "2026-10-30",
+  "version": "0.1.0-rc.2",
+  "date": "2026-10-31",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 88,
+    "passed": 93,
     "scope": "isolated filesystem, lifecycle, IPC, hardware selection, palette and activation safety",
     "live_install": false
   },
@@ -49,5 +49,12 @@
     "code_ownership": ".github/CODEOWNERS",
     "release_input_inventory": "docs/release-inputs.spdx.json",
     "remote_protections": "not changed; owner configuration required"
+  },
+  "dark_appearance": {
+    "user_preferences": "prefer-dark; GTK Adwaita-dark",
+    "portal_readback": "org.freedesktop.appearance color-scheme = 1",
+    "vscode_default": "Default Dark Modern; automatic OS colour detection",
+    "native_settings_validation": "Gio memory-backend tests, plus live readback of the two selected preferences",
+    "fresh_vm_validation": false
   }
 }

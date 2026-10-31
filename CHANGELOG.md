@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0-rc.2 — 2026-10-31
+
+- Default to dark OS/application appearance through per-user GSettings, GTK3/4
+  defaults and the standard desktop Settings portal.
+- Seed fresh VS Code preferences with Dark Modern and automatic OS appearance;
+  preserve existing application settings and unrelated GTK keys/comments.
+- Back up only the two changed desktop preference keys, with exact per-key
+  rollback and later-edit conflict checks; never snapshot a whole dconf database.
+- Keep appearance dependencies to Ubuntu schema/backend packages, without adding
+  a full desktop or changing wallpaper-generated component colours.
+
 ## 0.1.0-rc.1 — 2026-10-30
 
 - Extract the working Ubuntu/Hyprland configuration into a public portable project.

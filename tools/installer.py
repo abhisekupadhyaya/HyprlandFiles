@@ -25,7 +25,7 @@ DESKTOP = ('waybar.service','hypridle.service','hyprpaper.service','swaync.servi
 BASE_PACKAGES = ('python3','python3-gi','gir1.2-gtk-3.0','dbus-user-session','libpam-systemd',
                  'pipewire','pipewire-pulse','wireplumber','xdg-desktop-portal',
                  'xdg-desktop-portal-gtk','xwayland','thunar','pavucontrol','playerctl',
-                 'brightnessctl','wl-clipboard','grim','slurp','libnotify-bin',
+                 'gsettings-desktop-schemas','dconf-gsettings-backend','brightnessctl','wl-clipboard','grim','slurp','libnotify-bin',
                  'fonts-inter','fonts-jetbrains-mono','fonts-noto-color-emoji',
                  'adwaita-icon-theme','upower','less','util-linux','ca-certificates')
 
@@ -103,6 +103,8 @@ def user_operations(root, home, opts, generation=None):
         for target in ('default.target','sockets.target'):
             p=home/'.config/systemd/user'/f'{target}.wants'/unit
             if os.path.lexists(p): operations.append(operation(p,remove=True))
+    from appearance import file_operations
+    operations.extend(file_operations(root,home))
     return operations
 
 
@@ -304,6 +306,8 @@ def user_install(a):
         else: generation=theme.generate(Path(a.wallpaper).resolve() if a.wallpaper else PREFIX/'assets/royal-blue.png')
         ops=user_operations(PREFIX,home,options(a),generation)
         tx.apply(ops,adopt=a.adopt)
+        from appearance import apply_preferences
+        apply_preferences(home)
         run(['systemctl','--user','daemon-reload'])
         verify=run(['Hyprland','--verify-config','-c',home/'.config/hypr/hyprland.lua'],text=True,capture_output=True)
         print(verify.stdout)

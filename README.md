@@ -7,7 +7,7 @@ closed and starts graphical login when it opens.
 
 ![Original royal-blue wallpaper included with the project](assets/royal-blue.png)
 
-**0.1.0-rc.1 — release candidate.** Ubuntu **26.04 amd64** is the initial target.
+**0.1.0-rc.2 — release candidate.** Ubuntu **26.04 amd64** is the initial target.
 The configuration originates from a working installation; the portable installer
 has isolated transaction, rollback, lifecycle and protocol tests. A clean-machine
 end-to-end install is still a release gate. This is not a universal hardware or
@@ -56,6 +56,8 @@ configuration directories are never replaced. Keep personal Lua additions in
   tools retain their own supported configuration formats.
 - **pywal16** colours derived from a still wallpaper, cached before login and
   coordinated across Hyprland, Waybar, Kitty, Fuzzel, notifications and hyprlock.
+- A dark system appearance by default (GTK and standard app portal), with
+  fresh VS Code preferences following the OS. Existing VS Code customization is preserved.
 - The included original blue artwork; change it with **Super+Alt+W** or
   `hf-theme set /path/to/image.png`. Login uses a separate root-owned snapshot.
 - Native greetd/PAM authentication, a username dropdown, focused password field,

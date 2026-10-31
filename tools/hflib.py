@@ -14,7 +14,7 @@ import tempfile
 import urllib.request
 import zipfile
 
-VERSION = "0.1.0-rc.1"
+VERSION = "0.1.0-rc.2"
 PREFIX = Path("/usr/local/share/hyprlandfiles")
 ROOT_STATE = Path("/var/lib/hyprlandfiles")
 
@@ -87,7 +87,7 @@ class Transaction:
         self.store, self.boundary = Path(store), Path(boundary)
         self.managed = managed or {}
 
-    def apply(self, operations, adopt=False, dry_run=False):
+    def apply(self, operations, adopt=False, dry_run=False, show_rollback=True):
         if len({x['path'] for x in operations}) != len(operations):
             raise ValueError("Duplicate transaction target")
         entries = []
@@ -128,7 +128,8 @@ class Transaction:
         journal = dict(schema=1, uid=os.getuid(), boundary=str(self.boundary), status='prepared', entries=entries)
         atomic(snapshot / 'manifest.json', json.dumps(journal, indent=2)+'\n', 0o600)
         print("BACKUP=" + str(snapshot), flush=True)
-        print("Rollback: ./install.sh rollback " + str(snapshot), flush=True)
+        if show_rollback:
+            print("Rollback: ./install.sh rollback " + str(snapshot), flush=True)
         index = {x['path']: x for x in operations}
         for entry in entries:
             p = Path(entry['path'])

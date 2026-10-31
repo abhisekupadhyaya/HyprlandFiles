@@ -1,6 +1,6 @@
 # Validation status
 
-Version 0.1.0-rc.1, 2026-10-30. This document distinguishes configuration heritage
+Version 0.1.0-rc.2, 2026-10-31. This document distinguishes configuration heritage
 from validation of the new portable installer.
 
 The originating configuration ran on Ubuntu Server 26.04 amd64, Hyprland 0.57,
@@ -28,7 +28,7 @@ outputs; Unix socket readiness uses a private temporary socket.
 
 Native Lua parser, deterministic patched package builds and locked wheel checks
 are additional local integration checks. Automated results are recorded in
-[release-preparation.json](release-preparation.json): 88 tests passed, native Lua
+[release-preparation.json](release-preparation.json): 93 tests passed, native Lua
 and Fuzzel validation passed for both profiles, controller unit syntax passed,
 and two patched greeter builds were identical; CI execution is not claimed until GitHub runs it.
 
