@@ -37,7 +37,7 @@ class NativeContext(unittest.TestCase):
         (self.directory/'home').mkdir();(self.directory/'cache').mkdir()
         self.env=dict(os.environ,HOME=str(self.directory/'home'),XDG_CACHE_HOME=str(self.directory/'cache'),
                       SSH_CONNECTION='127.0.0.1 12345 127.0.0.1 22')
-        for name in ('VIRTUAL_ENV','VIRTUAL_ENV_PROMPT','CONDA_DEFAULT_ENV','CONDA_PREFIX','PYENV_VERSION','DIRENV_DIR','NVM_BIN'):
+        for name in ('VIRTUAL_ENV','VIRTUAL_ENV_PROMPT','CONDA_DEFAULT_ENV','CONDA_PREFIX','PYENV_VERSION','DIRENV_DIR','NVM_BIN','HF_PROMPT_GAP_EXTERNAL'):
             self.env.pop(name,None)
         self.git('init','-q','-b','main')
         (self.repo/'tracked').write_text('fixture\n');self.git('add','tracked');self.git('commit','-q','-m','fixture')
@@ -94,12 +94,15 @@ class NativeContext(unittest.TestCase):
     def test_compact_input_and_conditional_feedback(self):
         for width in (40,80,120):
             text,_=self.render({'VIRTUAL_ENV':'/work/vision/.venv'},width=width)
-            self.assertTrue(text.startswith('\n\u256d\u2500 '),repr(text))
-            self.assertEqual(text.splitlines()[-1],'\u2570\u2500 \u276f ')
+            self.assertTrue(text.startswith('\n\uf489 '),repr(text))
+            self.assertEqual(text.splitlines()[-1],'\u276f ')
             self.assertIn(getpass.getuser()+'@',text)
             self.assertIn('vision',text)
             for noise in ('RAM:','UTC','33ms','0ms'):
                 self.assertNotIn(noise,text)
+        text,_=self.render({'HF_PROMPT_GAP_EXTERNAL':'1'})
+        self.assertTrue(text.startswith('\uf489 '),repr(text))
+        self.assertNotIn('\n\n',text)
         text,_=self.render(elapsed=2500);self.assertIn('2.5s',text)
         text,raw=self.render(status=7)
         self.assertIn('exit 7',text)

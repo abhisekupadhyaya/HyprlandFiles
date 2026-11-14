@@ -71,8 +71,8 @@ The optional black/blue Bash add-on has been applied on the existing host.
 Ghostty's merged configuration reports a black background with 0.8 opacity,
 opaque ribbon cells and `/bin/bash`. The compact prompt shows `user@host`,
 project/folder, Git and active environment context above a fixed input marker.
-Blue corner connectors join the two rows; full headers and a leading blank line
-separate command blocks by default. History compaction is opt-in.
+The minimal header has no corner connectors. A blank line outside the prompt
+separates command blocks and survives the default history compaction.
 Timing is conditional above two seconds and failures show a red marker/exit code.
 Python virtualenv/Conda/pyenv/direnv and project-scoped Node context use exported
 activation variables without interpreter probes. Four optional native tests use
@@ -89,7 +89,7 @@ using the installed Ghostty and VS Code integration scripts preserve their OSC
 hooks; accepting and executing a harmless history suggestion passes in both
 contexts and with tmux's terminal type. Real Python environment activation and
 deactivation, failure status and ble.sh transient header boundaries also pass
-through all three startup paths. On opt-in, repeated headers collapse without another
+through all three startup paths. Repeated headers collapse without another
 prompt-renderer invocation. A local interleaved benchmark of 24 measured renders
 per case, after three warmups, observed about 8 ms in the home directory and
 12–14 ms in the repository, including an active virtualenv. This measures the

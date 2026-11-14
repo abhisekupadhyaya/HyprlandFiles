@@ -24,16 +24,18 @@ fi
 eval "$("$HOME/.local/bin/oh-my-posh" init bash --config "$HOME/.config/hyprlandfiles/terminal/blue-oled.omp.json")"
 
 if [[ ${BLE_VERSION:-} ]]; then
+    # Draw the gap outside PS1 so trimming old headers cannot remove it.
+    bleopt prompt_ruler=empty-line
+    export HF_PROMPT_GAP_EXTERNAL=1
     bleopt complete_auto_complete=1
     bleopt prompt_eol_mark='%'
     ble-face -s auto_complete fg='#93A4BB'
-    # Keep the header and its leading blank line for each command by default.
-    # Optional compaction reuses ble's render data without another process;
-    # preserve the first header after activation-context changes when enabled.
+    # Reuse ble's render data to compact repeated headers without another
+    # process; preserve the first header after activation-context changes.
     _hf_prompt_transient() {
         local previous_status=$? desired= context
         context="${VIRTUAL_ENV-}"$'\037'"${VIRTUAL_ENV_PROMPT-}"$'\037'"${CONDA_PREFIX-}"$'\037'"${CONDA_DEFAULT_ENV-}"$'\037'"${PYENV_VERSION-}"$'\037'"${NVM_BIN-}"$'\037'"${DIRENV_DIR-}"
-        if [[ ${HF_PROMPT_TRANSIENT:-0} == 1 && ${_HF_PROMPT_CONTEXT+x} &&
+        if [[ ${HF_PROMPT_TRANSIENT:-1} != 0 && ${_HF_PROMPT_CONTEXT+x} &&
               $_HF_PROMPT_CONTEXT == "$context" ]]; then
             desired=same-dir:trim
         fi
@@ -43,4 +45,7 @@ if [[ ${BLE_VERSION:-} ]]; then
     }
     blehook PRECMD+=_hf_prompt_transient
     ble-attach
+else
+    # Plain Bash uses the theme's leading newline instead of ble's ruler.
+    unset HF_PROMPT_GAP_EXTERNAL
 fi
