@@ -27,7 +27,7 @@ Extended tests exercise real pywal16 palette generation and cross-component
 outputs; Unix socket readiness uses a private temporary socket.
 
 Current automated results are recorded in
-[release-preparation.json](release-preparation.json): 118 tests pass, including
+[release-preparation.json](release-preparation.json): 119 tests pass, including
 real locked-wheel palette generation, the Server mode menu command, local greetd
 entrypoint checks, terminal payload rollback, offline Cargo staging, archive
 validation and vendor reproducibility. Appearance tests use a private schema and

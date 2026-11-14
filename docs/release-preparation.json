@@ -4,7 +4,7 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 118,
+    "passed": 119,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },

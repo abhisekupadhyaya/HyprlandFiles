@@ -22,7 +22,7 @@ from tui import TUI_PACKAGES, install_operations as tui_operations, locked_sourc
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT/'locks/ubuntu-26.04-amd64.json').read_text())
 AUDIO = ('pipewire.service','pipewire.socket','pipewire-pulse.service',
-         'pipewire-pulse.socket','wireplumber.service')
+         'pipewire-pulse.socket','wireplumber.service','filter-chain.service')
 DESKTOP = ('waybar.service','hypridle.service','hyprpaper.service','swaync.service')
 BASE_PACKAGES = ('python3','python3-gi','gir1.2-gtk-3.0','dbus-user-session','libpam-systemd',
                  'pipewire','pipewire-pulse','wireplumber','xdg-desktop-portal',

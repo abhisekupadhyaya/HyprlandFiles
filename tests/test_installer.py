@@ -108,6 +108,20 @@ class Transactions(unittest.TestCase):
         self.tx.rollback(snapshot)
         self.assertFalse((self.home/'etc/greetd/config.toml').exists())
 
+    def test_filter_chain_cannot_start_desktop_audio_from_default_target(self):
+        from types import SimpleNamespace
+        target=Path('/etc/systemd/user/default.target.wants/filter-chain.service')
+        original=Path.is_symlink
+        with patch.object(installer.pwd,'getpwnam',return_value=SimpleNamespace(pw_name='_greetd')), \
+                patch.object(installer.os.path,'lexists',side_effect=lambda path:Path(path)==target), \
+                patch.object(Path,'is_symlink',autospec=True,side_effect=lambda path:path==target or original(path)), \
+                patch.object(installer.os,'readlink',return_value='/usr/lib/systemd/user/filter-chain.service'):
+            ops=installer.system_operations(ROOT,SimpleNamespace(pw_name='alice'),
+                dict(profile='laptop-server',scale='auto',gpu='auto',keyboard='us'))
+        self.assertTrue(next(op for op in ops if op['path']==str(target))['remove'])
+        dropin=next(op for op in ops if op['path']=='/etc/systemd/user/filter-chain.service.d/hyprlandfiles.conf')
+        self.assertIn('PartOf=graphical-session.target',dropin['data'])
+
     def test_preflight_dry_run_does_not_create_backups_or_targets(self):
         result=self.tx.apply([operation(self.home/'new','value')],dry_run=True)
         self.assertEqual(len(result),1)
