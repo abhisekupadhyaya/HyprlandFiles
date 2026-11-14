@@ -83,3 +83,26 @@ class Preferences(unittest.TestCase):
         self.settings.set_string('color-scheme','prefer-light')
         with self.assertRaises(ValueError):appearance.rollback(self.home,snapshot)
         self.assertEqual(self.settings.get_string('color-scheme'),'prefer-light')
+
+    def test_readback_waits_for_backend_notification(self):
+        from gi.repository import GLib
+        ready={'value':False};original=appearance.user_values
+        def notify():
+            ready['value']=True
+            return False
+        source=GLib.idle_add(notify)
+        def cached(settings):
+            return original(settings) if ready['value'] else {key:None for key in appearance.DESIRED}
+        try:
+            with patch.object(appearance,'user_values',side_effect=cached):
+                snapshot=appearance.apply_preferences(self.home)
+            self.assertTrue(ready['value'])
+            self.assertEqual(self.settings.get_string('color-scheme'),'prefer-dark')
+            appearance.rollback(self.home,snapshot)
+        finally:
+            if not ready['value']:GLib.source_remove(source)
+
+    def test_permanent_readback_mismatch_remains_an_error(self):
+        desired={key:"'"+value+"'" for key,value in appearance.DESIRED.items()}
+        with self.assertRaisesRegex(RuntimeError,'readback did not match'):
+            appearance.verify_preferences(self.settings,desired,timeout=.01)

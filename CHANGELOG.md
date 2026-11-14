@@ -2,6 +2,9 @@
 
 ## 0.1.0-rc.3 — 2026-11-13
 
+- Wait for GSettings backend notifications before appearance readback, while
+  retaining errors for persistent mismatches. Native checks use a private runtime
+  directory and work from SSH sessions without XDG_RUNTIME_DIR.
 - Provide a terminal-first desktop with Ghostty, Yazi, Superfile, Wiremix,
   Bluetui, tmux and btop; retain authenticated login and both lifecycle profiles.
 - Fix the Server mode menu command and restrict the managed session launcher
