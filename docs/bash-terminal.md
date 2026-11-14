@@ -12,18 +12,43 @@ after applying. The existing Bash login shell, aliases, NVM, completion, history
 VS Code shell integration and Ghostty shell integration remain in place. No
 automatic tmux attachment or TERM override is added.
 
-Oh My Posh displays user/host, a shortened path, Git branch and working/staged
-changes, commands taking over two seconds and nonzero exit status. A blue input
-marker starts the second line. Labels use ordinary text, so the prompt remains
-readable in Remote SSH clients without Nerd Font glyphs. ble.sh supplies Bash
-history suggestions and syntax highlighting; Right Arrow accepts suggestions.
+For a styling update that preserves your current font, size and line height,
+and does not download or replace any fonts or tools:
 
-The palette source is `config/terminal/blue-oled.json`: opaque `#000000`,
+```sh
+python3 tools/terminal_setup.py apply --style-only
+```
+
+Oh My Posh uses two rows of cyan, cobalt and navy powerline ribbons. The first
+shows user/host, physical RAM usage and the last command's duration. The second
+shows Bash, a clock/day with timezone, the current path, Git changes and failures.
+The clock and less essential fields hide in narrow terminals. Nerd Font icons
+and angular caps match the ribbon layout; existing font preferences remain
+unchanged with `--style-only`. ble.sh supplies Bash history suggestions and
+syntax highlighting; Right Arrow accepts suggestions.
+
+The palette source is `config/terminal/blue-oled.json`: an 80% black tint,
 off-white text, blue/cyan accents and coordinated ANSI colours. The Ghostty
-overlay loads after the cached wallpaper palette. VS Code uses Dark Modern as
-its syntax base with black editor/terminal/panel surfaces and blue accents.
-This creates an OLED-style appearance; actual black levels, HDR brightness and
-wide-gamut performance depend on display hardware and colour management.
+overlay loads after the cached wallpaper palette. Prompt cells keep opaque
+backgrounds so ribbon labels stay sharp. A separate optional Hyprland appearance
+include enables stronger cached blur, subtle grain and vibrancy. It preserves
+personal appearance settings and does not touch `hypr/user.lua` or dim the whole
+window/text with an opacity rule. Ghostty's native blur option also works on
+supported platforms; under Hyprland, the compositor supplies the blur.
+For an already running Hyprland session, apply the include with
+`hyprctl reload config-only`; this does not restart the compositor.
+
+VS Code keeps black editor/terminal/panel surfaces with blue accents. Its native
+Modern UI glass controls enable frosted menus and overlays in supported desktop
+versions. These are application-scoped settings: Remote SSH cannot configure
+the separate client's application preferences. Merge the three keys from
+`~/.config/hyprlandfiles/terminal/vscode-glass.settings.json` into the **local
+User Settings JSON** on the computer displaying VS Code. This controls supported
+menus/overlays; it does not turn VS Code's terminal canvas into an OS-transparent
+window. OS/VS Code reduced-transparency preferences are respected.
+
+Actual black levels, HDR brightness and wide-gamut performance depend on the
+display hardware and colour management; the theme does not change calibration.
 
 Four JetBrains Mono Nerd Font Mono styles are installed per user. VS Code's
 terminal font has standard monospace fallbacks. In a Remote SSH window, Bash and

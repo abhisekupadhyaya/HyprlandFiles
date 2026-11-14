@@ -17,3 +17,8 @@ hl.animation({ leaf = "workspaces", enabled = true, speed = 1.6, bezier = "hf", 
 local colors = os.getenv("HOME") .. "/.local/state/hyprlandfiles/current/hyprland.lua"
 local file = io.open(colors, "r")
 if file then file:close(); dofile(colors) end
+
+-- Optional shared terminal glass; the add-on supplies this user-owned file.
+local hf_glass = os.getenv("HOME") .. "/.config/hyprlandfiles/terminal/hypr-glass.lua"
+local hf_glass_file = io.open(hf_glass, "r")
+if hf_glass_file then hf_glass_file:close(); dofile(hf_glass) end
