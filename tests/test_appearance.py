@@ -1,5 +1,7 @@
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -44,12 +46,25 @@ try:
 except ImportError:
     Gio=None
 
-@unittest.skipIf(Gio is None,'Native Gio is available on Ubuntu target; optional in generic CI')
+@unittest.skipIf(Gio is None or shutil.which('glib-compile-schemas') is None,
+                 'Native Gio/schema compiler are optional in generic CI')
 class Preferences(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Use a private schema and memory backend even on minimal hosts with Gio
+        # but no installed desktop schemas. No real preferences are accessed.
+        cls.schemas=tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.schemas.cleanup)
+        directory=Path(cls.schemas.name)
+        shutil.copyfile(ROOT/'tests/fixtures/appearance.gschema.xml',directory/'appearance.gschema.xml')
+        subprocess.run(['glib-compile-schemas',directory],check=True)
+        source=Gio.SettingsSchemaSource.new_from_directory(str(directory),None,False)
+        cls.schema=source.lookup(appearance.SCHEMA,False)
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.home=Path(self.tmp.name)
-        self.settings=Gio.Settings.new_with_backend(appearance.SCHEMA,Gio.memory_settings_backend_new())
+        self.settings=Gio.Settings.new_full(self.schema,Gio.memory_settings_backend_new(),None)
         self.backend=patch.object(appearance,'settings_backend',return_value=self.settings)
         self.backend.start();self.addCleanup(self.backend.stop)
 

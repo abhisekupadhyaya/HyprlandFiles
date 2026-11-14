@@ -82,7 +82,7 @@
       "size": 5745622,
       "version": "0.57.0-1ppa2~1resolute1",
       "architecture": "amd64",
-      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprland/hyprland_0.57.0-1ppa2~1resolute1_amd64.deb"
+      "source_url": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33880748/+files/hyprland_0.57.0-1ppa2~1resolute1_amd64.deb"
     },
     {
       "kind": "package",
@@ -92,7 +92,7 @@
       "size": 372610,
       "version": "0.9.6-1ppa1~1resolute1",
       "architecture": "amd64",
-      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprlock/hyprlock_0.9.6-1ppa1~1resolute1_amd64.deb"
+      "source_url": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33414500/+files/hyprlock_0.9.6-1ppa1~1resolute1_amd64.deb"
     },
     {
       "kind": "package",
@@ -102,7 +102,7 @@
       "size": 184416,
       "version": "0.8.4-1ppa3~1resolute1",
       "architecture": "amd64",
-      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprpaper/hyprpaper_0.8.4-1ppa3~1resolute1_amd64.deb"
+      "source_url": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33583728/+files/hyprpaper_0.8.4-1ppa3~1resolute1_amd64.deb"
     },
     {
       "kind": "package",
@@ -122,7 +122,7 @@
       "size": 146098,
       "version": "0.1.1-1ppa3~1resolute1",
       "architecture": "amd64",
-      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprshutdown/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb"
+      "source_url": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33583732/+files/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb"
     },
     {
       "kind": "package",
@@ -152,7 +152,7 @@
       "size": 200620,
       "version": "0.1.13-1ppa1~1resolute1",
       "architecture": "amd64",
-      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprcursor/libhyprcursor1_0.1.13-1ppa1~1resolute1_amd64.deb"
+      "source_url": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/32798070/+files/libhyprcursor1_0.1.13-1ppa1~1resolute1_amd64.deb"
     },
     {
       "kind": "package",
@@ -182,7 +182,7 @@
       "size": 569336,
       "version": "0.6.0-1ppa3~1resolute1",
       "architecture": "amd64",
-      "source_url": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprtoolkit/libhyprtoolkit6_0.6.0-1ppa3~1resolute1_amd64.deb"
+      "source_url": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33587049/+files/libhyprtoolkit6_0.6.0-1ppa3~1resolute1_amd64.deb"
     },
     {
       "kind": "package",
@@ -284,6 +284,55 @@
       "source_url": "https://archive.ubuntu.com/ubuntu/pool/universe/n/nwg-hello/nwg-hello_0.4.2-1_amd64.deb"
     },
     {
+      "kind": "tui",
+      "name": "Bluetui",
+      "file": "tui/bluetui-x86_64-linux-musl",
+      "sha256": "b476ee473cb4f7a48cd75d440e991bedc835ff5ac704aac1f1992f8e826222fd",
+      "size": 3437856,
+      "version": "0.8.2",
+      "architecture": "amd64",
+      "source_url": "https://github.com/pythops/bluetui/releases/download/v0.8.2/bluetui-x86_64-linux-musl"
+    },
+    {
+      "kind": "tui",
+      "name": "Superfile",
+      "file": "tui/superfile-linux-v1.6.0-amd64.tar.gz",
+      "sha256": "d45b0e95072629a6aa7983a84eedca9cd7a98861e67ef91be1415496e3dda309",
+      "size": 13490110,
+      "version": "1.6.0",
+      "architecture": "amd64",
+      "source_url": "https://github.com/yorukot/superfile/releases/download/v1.6.0/superfile-linux-v1.6.0-amd64.tar.gz"
+    },
+    {
+      "kind": "tui-vendor",
+      "name": "Wiremix",
+      "file": "tui/wiremix-0.11.0-vendor.tar",
+      "sha256": "014207253c59b92adba3ebf7b2ed643d10319142bb809ebb201fd1fb83c77fd7",
+      "size": 309708800,
+      "version": "0.11.0",
+      "architecture": "amd64"
+    },
+    {
+      "kind": "tui",
+      "name": "Wiremix",
+      "file": "tui/wiremix-0.11.0.crate",
+      "sha256": "ed7e41e369d8ec9be6e141d0cf10091e198bc9de40447d81057dcb326cb70351",
+      "size": 96290,
+      "version": "0.11.0",
+      "architecture": "amd64",
+      "source_url": "https://static.crates.io/crates/wiremix/wiremix-0.11.0.crate"
+    },
+    {
+      "kind": "tui",
+      "name": "Yazi",
+      "file": "tui/yazi-x86_64-unknown-linux-gnu.zip",
+      "sha256": "a02fe91d3304294048c681f010f1100856872a4e98ecf6927328e888d40a6ad2",
+      "size": 14397810,
+      "version": "26.9.1",
+      "architecture": "amd64",
+      "source_url": "https://github.com/sxyazi/yazi/releases/download/v26.9.1/yazi-x86_64-unknown-linux-gnu.zip"
+    },
+    {
       "kind": "wheel",
       "name": "colorthief-0.2.1-py2.py3-none-any.whl",
       "file": "wheels/colorthief-0.2.1-py2.py3-none-any.whl",
@@ -307,5 +356,6 @@
       "size": 166349,
       "source_url": "https://files.pythonhosted.org/packages/eb/bb/6ffe31b21e9f5c06e2eb2b194662e3bae8a37fa7c812625d0b2e0a04c7bb/pywal16-3.8.15-py3-none-any.whl"
     }
-  ]
+  ],
+  "tui_lock_sha256": "358a2e08c7df68201d2e1ed324637546be5bbb6b004bc0fad720d012d77ee134"
 }

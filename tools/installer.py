@@ -63,6 +63,19 @@ def package_pins(packages, restrict_ppa=True):
     return text
 
 
+def online_package_args():
+    unavailable=[name for name,version in LOCK['packages'].items()
+                 if subprocess.run(['apt-cache','show',name+'='+version],
+                                   stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode]
+    if not unavailable:
+        return [f'{name}={version}' for name,version in LOCK['packages'].items()]
+    print('APT no longer lists exact versions for: '+', '.join(unavailable),flush=True)
+    print('Retrieving Git-hashed desktop archives from reviewed Ubuntu/Launchpad URLs; versions remain unchanged.',flush=True)
+    from recovery import desktop_archives
+    paths=desktop_archives(ROOT,ROOT_STATE/'cache/packages')
+    return [str(paths[name]) for name in LOCK['packages']]
+
+
 def options(a):
     return dict(profile=a.profile,scale=a.scale,gpu=a.gpu,keyboard=a.keyboard)
 
@@ -178,11 +191,13 @@ def plan(a):
     else:
         print('Source trust: https://launchpad.net/~cppiber/+archive/ubuntu/hyprland')
         print('Signing key: A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E')
+        print('Superseded versions use exact Git-hashed archives from reviewed Ubuntu/Launchpad build links.')
     print('PPA, exact ABI pins, root-owned runtime, greetd + patched nwg-hello/labwc, desktop-only audio.')
     print('Packages:', ' '.join([*(f'{k}={v}' for k,v in LOCK['packages'].items()),*BASE_PACKAGES,'nwg-hello='+LOCK['nwg_hello']['version']]))
     print('System config: /etc/{greetd,nwg-hello,hyprlandfiles,systemd}; runtime:',PREFIX)
     print('Terminal tools:', ', '.join(item['name'] for item in locked_sources(ROOT)))
-    print('TUI inputs come from checksum-locked upstream sources. Wiremix builds as the desktop account.')
+    print('Terminal inputs use the verified kit or checksum-locked upstream sources.')
+    print('Wiremix builds offline from retained dependencies as the desktop account; tmux provides persistent SSH sessions.')
     print('User config paths include ~/.config/{hypr,waybar,ghostty,fuzzel,swaync,xdg-desktop-portal,systemd} and ~/.local/{bin,share/applications}.')
     if a.profile=='laptop-server': print('Lid policy: ignore lid suspend on AC/battery/docked; lock the existing session on close. Takes effect after reboot.')
     print('Activation: enable controller for next boot only. No automatic logout, reboot or logind restart.')
@@ -245,7 +260,7 @@ def system_install(a):
         if artifacts is None:
             from build_greeter import build
             audited=build(ROOT,ROOT_STATE/'cache/greeter')
-            exact=[f'{k}={v}' for k,v in LOCK['packages'].items()]
+            exact=online_package_args()
         else:
             audited=artifacts[('greeter','nwg-hello')]
             exact=[str(artifacts[('package',name)]) for name in LOCK['packages']]
@@ -300,6 +315,10 @@ def user_install(a):
     if not (PREFIX/'runtime/lib').is_dir(): raise ValueError('Run the system stage first')
     actual=json.loads(Path('/etc/hyprlandfiles/session.json').read_text())
     if actual['profile']!=a.profile: raise ValueError('User profile must match the installed system profile: '+actual['profile'])
+    artifacts=None
+    if getattr(a,'bundle',None):
+        from recovery import verify
+        artifacts=verify(PREFIX,Path(a.bundle).absolute())
     home=Path.home();store=home/'.local/state/hyprlandfiles/backups'
     no_symlink_parents(store/'manifest-probe',home)
     store.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
@@ -315,7 +334,7 @@ def user_install(a):
         else: generation=theme.generate(Path(a.wallpaper).resolve() if a.wallpaper else PREFIX/'assets/royal-blue.png')
         theme.ghostty_palette(generation)
         with tempfile.TemporaryDirectory(prefix='hf-tui-',dir=store.parent) as workspace:
-            programs=tui_operations(PREFIX,home,Path(workspace))
+            programs=tui_operations(PREFIX,home,Path(workspace),artifacts=artifacts)
         ops=user_operations(PREFIX,home,options(a),generation)+programs
         tx.apply(ops,adopt=a.adopt)
         from appearance import apply_preferences

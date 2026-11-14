@@ -44,6 +44,8 @@ hf-desktop off             Graceful Server mode from desktop; never force-app-ki
 hf-theme set IMAGE         Generate/cache coordinated wallpaper colours
 hf-theme previous          Restore previous palette
 hf-theme status            Inspect palette
+tmux new-session -A -s work Create/reattach persistent server-side terminal work
+Ctrl+B, then D             Detach from tmux; reconnect over SSH to resume
 
 Logs: journalctl -b -u hf-desktopd; systemctl --user --failed
 Doctor: ./install.sh doctor (from checkout; no service changes)

@@ -46,7 +46,7 @@ def main():
         confirm=choose(prompt, ['Cancel', 'Confirm: '+choice])
         if not confirm.startswith('Confirm: '):return
         if choice.startswith('Log out'): subprocess.run(['hyprshutdown'],check=True)
-        elif choice.startswith('Server mode'): subprocess.run(['/usr/local/bin/hyprlandfiles','off'],check=True)
+        elif choice.startswith('Server mode'): subprocess.run([str(ROOT/'bin/hf-desktop'),'off'],check=True)
         elif choice.startswith('Restart'): subprocess.run(['systemctl','reboot'],check=True)
         elif choice.startswith('Shut down'): subprocess.run(['systemctl','poweroff'],check=True)
     elif mode=='wallpaper':

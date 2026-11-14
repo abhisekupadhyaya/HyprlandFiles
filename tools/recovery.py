@@ -19,12 +19,37 @@ MANIFEST = 'locks/recovery-ubuntu-26.04-amd64.json'
 
 
 def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream,'sha256').hexdigest()
 
 
 def package_info(path):
     fields = output(['dpkg-deb','-f',path,'Package','Version','Architecture'])
     return dict(line.split(': ',1) for line in fields.splitlines() if ': ' in line)
+
+
+def desktop_archives(root, cache):
+    """Retrieve exact desktop .debs when signed APT indexes no longer list them."""
+    root,cache=Path(root),Path(cache)
+    manifest=json.loads((root/MANIFEST).read_text())
+    lock=json.loads((root/'locks/ubuntu-26.04-amd64.json').read_text())
+    entries=[item for item in manifest['artifacts'] if item['kind']=='package']
+    if (manifest['lock_sha256']!=digest(root/'locks/ubuntu-26.04-amd64.json')
+            or len(entries)!=len(lock['packages'])
+            or {item['name']:item['version'] for item in entries}!=lock['packages']):
+        raise ValueError('Desktop archive manifest differs from the exact package lock')
+    from hflib import checked_download
+    paths={}
+    for item in entries:
+        path=checked_download(item['source_url'],item['sha256'],cache/Path(item['file']).name)
+        actual=package_info(path)
+        if (digest(path)!=item['sha256'] or path.stat().st_size!=item['size']
+                or (actual.get('Package'),actual.get('Version'),actual.get('Architecture'))
+                    !=(item['name'],item['version'],item['architecture'])
+                or item['architecture'] not in (lock.get('architecture','amd64'),'all')):
+            raise ValueError('Archived desktop package identity/hash mismatch: '+item['name'])
+        paths[item['name']]=path
+    return paths
 
 
 def verify(root, directory):
@@ -36,6 +61,8 @@ def verify(root, directory):
         raise ValueError('Unknown recovery manifest format or target')
     if expected['lock_sha256'] != digest(root/'locks/ubuntu-26.04-amd64.json') or expected['patch_sha256'] != digest(root/'patches/nwg-hello-0.4.2-privacy-and-ipc.patch'):
         raise ValueError('Recovery manifest is stale for this checkout')
+    if expected.get('tui_lock_sha256')!=digest(root/'locks/tui-amd64.json'):
+        raise ValueError('Recovery manifest is stale for the terminal tool lock')
     no_symlink_parents(directory/'manifest.json',directory.parent)
     if (directory/'manifest.json').is_symlink() or digest(directory/'manifest.json') != digest(trusted):
         raise ValueError('Kit manifest differs from the reviewed Git manifest')
@@ -66,6 +93,11 @@ def verify(root, directory):
         path=paths.get(('wheel',wheel['filename']))
         if not path or digest(path)!=wheel['sha256']:
             raise ValueError('Locked palette wheel missing from kit')
+    for item in json.loads((root/'locks/tui-amd64.json').read_text()):
+        for kind,record in [('tui',item),*([('tui-vendor',item['vendor'])] if 'vendor' in item else [])]:
+            path=paths.get((kind,item['name']))
+            if path is None or digest(path)!=record['sha256']:
+                raise ValueError('Locked terminal input missing from kit: '+item['name']+' ('+kind+')')
     return paths
 
 
@@ -83,6 +115,8 @@ def create(root, destination, archive_dirs, write_manifest=False):
     if destination.exists() or destination.is_symlink():
         raise ValueError('Use a new kit directory; existing artifacts are never overwritten')
     lock=json.loads((root/'locks/ubuntu-26.04-amd64.json').read_text())
+    previous=json.loads((root/MANIFEST).read_text()) if (root/MANIFEST).is_file() else {'artifacts':[]}
+    retained_urls={(item['kind'],item['name'],item['sha256']):item.get('source_url') for item in previous['artifacts']}
     candidates={}
     for directory in archive_dirs:
         for path in Path(directory).rglob('*.deb'):
@@ -100,7 +134,10 @@ def create(root, destination, archive_dirs, write_manifest=False):
             raise ValueError('Missing archive; retrieve with apt-get download '+name+'='+version)
         record=apt_record(name,version,digest(path));info=package_info(path)
         base='https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/' if name in lock['ppa_packages'] else 'https://archive.ubuntu.com/ubuntu/'
-        add('package',name,path,'packages/'+Path(record['Filename']).name,version,info['Architecture'],base+record['Filename'])
+        # Preserve reviewed build links for superseded packages, whose pool URL
+        # may have disappeared even while the original Launchpad build remains.
+        url=retained_urls.get(('package',name,digest(path))) or base+record['Filename']
+        add('package',name,path,'packages/'+Path(record['Filename']).name,version,info['Architecture'],url)
     patched=candidates.get(('nwg-hello',lock['nwg_hello']['version']))
     expected=json.loads((root/'docs/release-preparation.json').read_text())['greeter_build']['sha256']
     if not patched or digest(patched)!=expected:
@@ -115,7 +152,16 @@ def create(root, destination, archive_dirs, write_manifest=False):
         if not matches:
             raise ValueError('Missing verified wheel: '+wheel['filename'])
         add('wheel',wheel['filename'],matches[0],'wheels/'+wheel['filename'],url=wheel['url'])
-    manifest=dict(schema=1,target='ubuntu-26.04-amd64',lock_sha256=digest(root/'locks/ubuntu-26.04-amd64.json'),patch_sha256=digest(root/'patches/nwg-hello-0.4.2-privacy-and-ipc.patch'),artifacts=sorted(entries,key=lambda x:x['file']))
+    for item in json.loads((root/'locks/tui-amd64.json').read_text()):
+        for kind,record in [('tui',item),*([('tui-vendor',item['vendor'])] if 'vendor' in item else [])]:
+            matches=[p for directory in archive_dirs for p in Path(directory).rglob(record['filename'])
+                     if p.is_file() and not p.is_symlink() and digest(p)==record['sha256']]
+            if not matches:
+                raise ValueError('Missing verified terminal input; run tools/prepare_tui.py: '+record['filename'])
+            add(kind,item['name'],matches[0],'tui/'+record['filename'],item['version'],'amd64',record.get('url'))
+    manifest=dict(schema=1,target='ubuntu-26.04-amd64',lock_sha256=digest(root/'locks/ubuntu-26.04-amd64.json'),
+                  patch_sha256=digest(root/'patches/nwg-hello-0.4.2-privacy-and-ipc.patch'),
+                  tui_lock_sha256=digest(root/'locks/tui-amd64.json'),artifacts=sorted(entries,key=lambda x:x['file']))
     encoded=json.dumps(manifest,indent=2)+'\n'
     if not write_manifest and (root/MANIFEST).read_text()!=encoded:
         raise ValueError('Artifacts differ from the committed release manifest; review a new manifest explicitly')

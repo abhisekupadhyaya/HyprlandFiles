@@ -15,6 +15,10 @@ the operator's approval. Never send passwords to a log or issue.
       without installing a special checker merely for appearance.
 - [ ] Select a real file in a portal chooser and test a normal application's
       screen sharing. Interface availability alone is insufficient.
+- [ ] In SSH, create a named tmux session with a recognizable running command,
+      detach/disconnect, reconnect and reattach; confirm the same process/layout.
+      Test the retained-kit user phase with GitHub/crates.io unavailable; Wiremix
+      must build from the verified vendor archive without a Cargo download.
 - [ ] Change wallpaper; all selected user components change together. Restart
       preserves the selected image and palette without regeneration delays.
       Root-owned login snapshot remains separate by design.

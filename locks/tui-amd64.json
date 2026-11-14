@@ -3,24 +3,34 @@
     "name": "Yazi",
     "filename": "yazi-x86_64-unknown-linux-gnu.zip",
     "url": "https://github.com/sxyazi/yazi/releases/download/v26.9.1/yazi-x86_64-unknown-linux-gnu.zip",
-    "sha256": "a02fe91d3304294048c681f010f1100856872a4e98ecf6927328e888d40a6ad2"
+    "sha256": "a02fe91d3304294048c681f010f1100856872a4e98ecf6927328e888d40a6ad2",
+    "version": "26.9.1"
   },
   {
     "name": "Superfile",
     "filename": "superfile-linux-v1.6.0-amd64.tar.gz",
     "url": "https://github.com/yorukot/superfile/releases/download/v1.6.0/superfile-linux-v1.6.0-amd64.tar.gz",
-    "sha256": "d45b0e95072629a6aa7983a84eedca9cd7a98861e67ef91be1415496e3dda309"
+    "sha256": "d45b0e95072629a6aa7983a84eedca9cd7a98861e67ef91be1415496e3dda309",
+    "version": "1.6.0"
   },
   {
     "name": "Bluetui",
     "filename": "bluetui-x86_64-linux-musl",
     "url": "https://github.com/pythops/bluetui/releases/download/v0.8.2/bluetui-x86_64-linux-musl",
-    "sha256": "b476ee473cb4f7a48cd75d440e991bedc835ff5ac704aac1f1992f8e826222fd"
+    "sha256": "b476ee473cb4f7a48cd75d440e991bedc835ff5ac704aac1f1992f8e826222fd",
+    "version": "0.8.2"
   },
   {
     "name": "Wiremix",
     "filename": "wiremix-0.11.0.crate",
     "url": "https://static.crates.io/crates/wiremix/wiremix-0.11.0.crate",
-    "sha256": "ed7e41e369d8ec9be6e141d0cf10091e198bc9de40447d81057dcb326cb70351"
+    "sha256": "ed7e41e369d8ec9be6e141d0cf10091e198bc9de40447d81057dcb326cb70351",
+    "version": "0.11.0",
+    "vendor": {
+      "filename": "wiremix-0.11.0-vendor.tar",
+      "sha256": "014207253c59b92adba3ebf7b2ed643d10319142bb809ebb201fd1fb83c77fd7",
+      "size": 309708800,
+      "crates": 219
+    }
   }
 ]

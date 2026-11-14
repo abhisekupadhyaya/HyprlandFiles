@@ -90,6 +90,20 @@ session_module=importlib.util.module_from_spec(session_spec);session_loader.exec
 
 
 class SessionGuard(unittest.TestCase):
+    def test_only_local_authenticated_greetd_sessions_can_launch(self):
+        props={'Remote':'no','Seat':'seat0','User':str(os.getuid()),'Class':'user','Service':'greetd'}
+        with patch.dict(os.environ,{'XDG_SESSION_ID':'test','XDG_RUNTIME_DIR':'/tmp/test-runtime'}), \
+                patch.object(session_module,'property',side_effect=lambda sid,key:props[key]), \
+                patch.object(session_module,'settings',return_value={'gpu':'default'}), \
+                patch.object(session_module,'run_session',return_value=0) as launch:
+            self.assertEqual(session_module.main(),0)
+            launch.assert_called_once()
+            for key,value in [('Remote','yes'),('Seat','seat1'),('User','-1'),('Class','greeter'),('Service','login'),('Service','sshd')]:
+                with self.subTest(key=key,value=value),patch.dict(props,{key:value}):
+                    launch.reset_mock()
+                    with self.assertRaises(RuntimeError):session_module.main()
+                    launch.assert_not_called()
+
     def test_child_does_not_inherit_lifetime_locks(self):
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/'guard';path.touch()
@@ -111,6 +125,31 @@ with guard.open('rb') as f:
             self.assertEqual(rc,0)
             with path.open('rb') as f:
                 fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
+
+
+menu_loader=importlib.machinery.SourceFileLoader('hf_menu',str(ROOT/'bin/hf-menu'))
+menu_spec=importlib.util.spec_from_loader(menu_loader.name,menu_loader)
+menu_module=importlib.util.module_from_spec(menu_spec);menu_loader.exec_module(menu_module)
+
+
+class SessionMenu(unittest.TestCase):
+    def test_server_mode_uses_installed_command_after_confirmation(self):
+        choice='Server mode — log out and hide login'
+        with patch.object(sys,'argv',['hf-menu','power']), \
+                patch.object(menu_module,'choose',side_effect=[choice,'Confirm: '+choice]), \
+                patch.object(menu_module.subprocess,'run') as run:
+            menu_module.main()
+        executable=Path(run.call_args.args[0][0])
+        self.assertEqual(executable,ROOT/'bin/hf-desktop')
+        self.assertTrue(executable.is_file())
+        self.assertEqual(run.call_args.args[0][1:],['off'])
+
+    def test_cancelled_server_mode_does_not_change_session(self):
+        with patch.object(sys,'argv',['hf-menu','power']), \
+                patch.object(menu_module,'choose',side_effect=['Server mode','Cancel']), \
+                patch.object(menu_module.subprocess,'run') as run:
+            menu_module.main()
+            run.assert_not_called()
 
 
 if __name__=='__main__':unittest.main()

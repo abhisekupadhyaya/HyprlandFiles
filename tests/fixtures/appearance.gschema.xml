@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Minimal schema for private memory-backend preference tests. -->
+<schemalist>
+  <schema id="org.gnome.desktop.interface" path="/org/gnome/desktop/interface/">
+    <key name="color-scheme" type="s"><default>'default'</default></key>
+    <key name="gtk-theme" type="s"><default>'Adwaita'</default></key>
+    <key name="font-name" type="s"><default>'Sans 10'</default></key>
+  </schema>
+</schemalist>

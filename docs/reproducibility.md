@@ -24,6 +24,13 @@ release has different package/Python ABIs and needs a tested project release.
 A one-command interface cannot safely turn a 26.04 lock into support for every
 past/future Ubuntu release. Unsupported systems stop before system changes.
 
+When signed APT indexes no longer list an exact desktop version, source-only
+installation retrieves the original archives from the reviewed Ubuntu/Launchpad
+URLs in the Git manifest. Hashes and package identities must still match the lock.
+Six superseded PPA inputs have verified original build links for this candidate.
+Those links are not a retention guarantee; keep the complete source-plus-kit
+archive separately while the bytes remain available.
+
 ## Retain a source-plus-kit release
 
 A source-plus-kit `.tar.gz` contains the reviewed portable source and
@@ -41,15 +48,19 @@ against the manifest in the reviewed source checkout, plus .deb package/version/
 architecture identities. The kit's own manifest cannot authorize changed bytes.
 Tampered, missing, redirected or stale kits are refused before installation.
 
-The 31 artifacts are 26 exact desktop packages, the patched nwg-hello package,
-its original Ubuntu build input, and three locked Python wheels. Install uses
+The 36 artifacts are 26 exact desktop packages, the patched nwg-hello package,
+its original Ubuntu build input, three locked Python wheels, four terminal tool
+inputs, and one deterministic Wiremix vendor archive containing all 219 registry
+crates from the upstream Cargo lockfile. Install uses
 prebuilt verified desktop packages; it skips the greeter build and does not add
 the PPA on a fresh machine. Normal Ubuntu dependencies still come from signed
 Ubuntu repositories, and ordinary security updates remain enabled. It is not a
 complete offline OS mirror and does not freeze shared OS/security libraries.
+Wiremix builds offline as the desktop account with Ubuntu's build dependencies.
+Kit installs do not contact GitHub or crates.io during the user phase.
 
 Keep the archive in a separate backup location. Git contains the small trust
-manifest, not the 75 MB binary kit. An unpushed local repository or one copy on a
+manifest, not the binary/source kit. An unpushed local repository or one copy on a
 laptop is not a durable backup. A public source-only clone still uses the online
 package path until a reviewed kit/release archive is separately distributed.
 Publishing to GitHub or uploading binary release assets is an explicit maintainer
@@ -61,7 +72,12 @@ While signed APT indexes still provide the release versions, obtain their
 archives with `apt-get download PACKAGE=VERSION` (no installation/root needed).
 Prepare the original greeter input, build the reviewed patched package with
 `python3 tools/build_greeter.py`, and obtain the locked wheels with
-`python3 tools/prepare_dev.py`. Existing verified caches may be reused.
+`python3 tools/prepare_dev.py`. Run `python3 tools/prepare_tui.py` to retain the
+four tool inputs and rebuild the reviewed vendor archive without compiling or
+installing the tools. Each dependency archive is checked against the SHA256 in
+Wiremix's Cargo.lock. Existing verified caches may be reused. When deliberately
+updating Wiremix, `--write-vendor-lock` records the actual deterministic archive
+hash for review; never invent a hash or loosen the installer verification.
 
 ```sh
 python3 tools/recovery.py create /new/kit-directory \

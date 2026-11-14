@@ -37,10 +37,16 @@ The setup phases are:
    install the root-owned runtime and login/controller files without enabling
    or starting the controller. An incomplete package stage keeps the
    login service masked; recover with its printed snapshot.
+   If APT no longer lists an exact desktop version, use the Git-hashed original
+   Ubuntu/Launchpad build archives and verify their package identities before
+   the same APT simulation. No newer desktop version is substituted.
 2. User: generate a complete initial palette before linking it, preserving a
-   valid existing choice on rerun; install individual rendered config files and
+   valid existing choice on rerun; verify terminal tool inputs from the kit or
+   checksum-locked upstream sources, build Wiremix offline from retained Cargo
+   dependencies as the desktop account, then install the terminal binaries,
+   individual rendered config files and
    native graphical-session enabling links; reload only user unit definitions;
-   validate native Lua. Only after success, a final sudo phase enables the
+   validate native Lua and Ghostty configuration. Only after success, a final sudo phase enables the
    controller for **next boot**. No running desktop is reloaded or started.
 
 If a system stage succeeds but the user stage fails, preserve the printed paths.
@@ -60,7 +66,7 @@ paths and personal `~/.config/hypr/user.lua` are never overwritten.
 | `--wallpaper` | Included blue still | Initial local image; cached choice is preserved on rerun |
 | `--adopt` | Off | Explicit backup/replacement of conflicting managed files |
 | `--yes` | Off | Noninteractive approval of the same setup plan |
-| `--bundle` | Auto-detect `bundles/ubuntu-26.04-amd64` | Verify and use preserved desktop packages/wheels |
+| `--bundle` | Auto-detect `bundles/ubuntu-26.04-amd64` | Verify and use preserved desktop packages, wheels and terminal inputs |
 
 Keep the same system profile on rerun. Automatic profile migration is refused;
 changing lid/power behaviour requires a separate reviewed migration.
@@ -105,12 +111,25 @@ Wiremix uses the existing PipeWire session. After a closed-lid boot, the audio
 backend starts when a desktop session begins. If Bluetui reports a software
 block, use `sudo rfkill unblock bluetooth`.
 
-The user stage downloads checksum-locked Yazi, Superfile and Bluetui releases,
+The user stage uses checksum-locked Yazi, Superfile and Bluetui releases,
 then builds Wiremix as the desktop account using its upstream Cargo lockfile.
-The recovery kit covers the locked desktop packages and wallpaper runtime.
-Installing the terminal tools also needs HTTPS access to GitHub and crates.io.
+The four tool inputs and all 219 locked registry crates are retained in the
+recovery kit. Cargo uses a private vendor directory and `--frozen`; it cannot
+fetch replacement dependencies. A source-only install first downloads those
+verified inputs from GitHub/crates.io. A kit install uses local inputs throughout
+the user phase. Ordinary Ubuntu dependencies still require signed APT sources.
+The system stage installs the Ubuntu Cargo/GCC/Clang/PipeWire development tools
+needed for that build; it does not build as root or install a Rustup toolchain.
 Kitty, Foot, Thunar, Blueman, PulseAudio Volume Control, Swappy, Sunshine and
 Moonlight are excluded from the default package list.
+
+tmux is installed for persistent local or remote terminal work. After connecting
+over SSH, run `tmux new-session -A -s work` to create or return to a session.
+Detach with Ctrl+B, then D; reconnect and run the same command to resume its
+shells, running commands and pane layout. Ghostty does not need to stay open.
+These sessions last until their processes exit or the server reboots. Server
+daemons should remain ordinary system services. Closing the laptop lid keeps
+the existing local desktop alive and locked independently of tmux.
 
 ## Default dark appearance
 

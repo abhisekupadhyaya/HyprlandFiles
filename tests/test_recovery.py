@@ -9,6 +9,7 @@ import tarfile
 from unittest.mock import patch
 from hflib import detect_profile, reject_unrelated_changes
 import recovery
+import installer
 
 
 class Recovery(unittest.TestCase):
@@ -25,6 +26,11 @@ class Recovery(unittest.TestCase):
         (self.root/'docs/release-preparation.json').write_text(json.dumps({'greeter_build':{'sha256':recovery.digest(patched)}}))
         wheel=self.cache/'example.whl';wheel.write_bytes(b'wheel-byte-fixture')
         (self.root/'locks/python-wheels.json').write_text(json.dumps([{'filename':wheel.name,'sha256':recovery.digest(wheel),'url':'https://example.invalid/example.whl'}]))
+        tui=self.cache/'example-tui.crate';tui.write_bytes(b'locked terminal source fixture')
+        vendor=self.cache/'example-vendor.tar';vendor.write_bytes(b'locked vendor fixture')
+        (self.root/'locks/tui-amd64.json').write_text(json.dumps([dict(name='Wiremix',version='1',filename=tui.name,
+            sha256=recovery.digest(tui),url='https://example.invalid/tui.crate',
+            vendor=dict(filename=vendor.name,sha256=recovery.digest(vendor),size=vendor.stat().st_size))]))
         record={'Filename':'pool/main/e/example/example_1_all.deb','SHA256':recovery.digest(example)}
         with patch.object(recovery,'apt_record',return_value=record):
             self.kit=self.base/'kit'
@@ -39,7 +45,42 @@ class Recovery(unittest.TestCase):
 
     def test_complete_kit_verifies_without_network(self):
         with patch.object(recovery,'apt_record',side_effect=AssertionError('verification must not use APT indexes')):
-            self.assertEqual(len(recovery.verify(self.root,self.kit)),4)
+            self.assertEqual(len(recovery.verify(self.root,self.kit)),6)
+
+    def test_archived_desktop_packages_match_lock_and_identity(self):
+        package=self.kit/'packages/example_1_all.deb'
+        with patch('hflib.checked_download',return_value=package):
+            self.assertEqual(recovery.desktop_archives(self.root,self.cache),{'example':package})
+        manifest=self.root/recovery.MANIFEST;data=json.loads(manifest.read_text())
+        entry=next(item for item in data['artifacts'] if item['kind']=='package')
+        entry.update(sha256=recovery.digest(self.original),size=self.original.stat().st_size)
+        manifest.write_text(json.dumps(data))
+        with patch('hflib.checked_download',return_value=self.original):
+            with self.assertRaisesRegex(ValueError,'identity/hash mismatch'):recovery.desktop_archives(self.root,self.cache)
+
+    def test_archive_fetch_refuses_stale_package_lock_before_download(self):
+        path=self.root/'locks/ubuntu-26.04-amd64.json';path.write_text(path.read_text()+'\n')
+        with patch('hflib.checked_download') as download:
+            with self.assertRaisesRegex(ValueError,'exact package lock'):recovery.desktop_archives(self.root,self.cache)
+            download.assert_not_called()
+
+    def test_online_install_prefers_signed_apt_versions(self):
+        from types import SimpleNamespace
+        with patch.object(installer,'LOCK',{'packages':{'example':'1'}}), \
+                patch.object(installer.subprocess,'run',return_value=SimpleNamespace(returncode=0)), \
+                patch.object(recovery,'desktop_archives') as retrieve:
+            self.assertEqual(installer.online_package_args(),['example=1'])
+            retrieve.assert_not_called()
+
+    def test_missing_apt_version_uses_verified_archives_without_changing_pin(self):
+        from types import SimpleNamespace
+        package=self.kit/'packages/example_1_all.deb'
+        with patch.object(installer,'LOCK',{'packages':{'example':'1'}}), \
+                patch.object(installer,'ROOT',self.root),patch.object(installer,'ROOT_STATE',self.base/'state'), \
+                patch.object(installer.subprocess,'run',return_value=SimpleNamespace(returncode=100)), \
+                patch.object(recovery,'desktop_archives',return_value={'example':package}) as retrieve:
+            self.assertEqual(installer.online_package_args(),[str(package)])
+            retrieve.assert_called_once_with(self.root,self.base/'state/cache/packages')
 
     def test_kit_manifest_is_not_its_own_trust_anchor(self):
         manifest=self.kit/'manifest.json';data=json.loads(manifest.read_text());data['artifacts'][0]['sha256']='0'*64
@@ -59,6 +100,23 @@ class Recovery(unittest.TestCase):
     def test_stale_manifest_rejected_after_lock_change(self):
         p=self.root/'locks/ubuntu-26.04-amd64.json';p.write_text(p.read_text()+'\n')
         with self.assertRaises(ValueError):recovery.verify(self.root,self.kit)
+
+    def test_terminal_lock_change_invalidates_kit(self):
+        path=self.root/'locks/tui-amd64.json';path.write_text(path.read_text()+'\n')
+        with self.assertRaisesRegex(ValueError,'terminal tool lock'):recovery.verify(self.root,self.kit)
+
+    def test_terminal_input_and_vendor_are_both_required(self):
+        for kind in ('tui','tui-vendor'):
+            with self.subTest(kind=kind):
+                manifest=json.loads((self.root/recovery.MANIFEST).read_text())
+                manifest['artifacts']=[item for item in manifest['artifacts'] if item['kind']!=kind]
+                encoded=json.dumps(manifest)
+                trusted=self.root/recovery.MANIFEST;original=trusted.read_text()
+                try:
+                    trusted.write_text(encoded);(self.kit/'manifest.json').write_text(encoded)
+                    with self.assertRaisesRegex(ValueError,'Locked terminal input'):recovery.verify(self.root,self.kit)
+                finally:
+                    trusted.write_text(original);(self.kit/'manifest.json').write_text(original)
 
     def test_existing_destination_is_never_overwritten(self):
         with self.assertRaises(ValueError):recovery.create(self.root,self.kit,[self.cache])
