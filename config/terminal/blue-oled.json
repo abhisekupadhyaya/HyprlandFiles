@@ -1,0 +1,18 @@
+{
+  "name": "Hyprland Blue OLED",
+  "background": "#000000",
+  "foreground": "#D6E2F0",
+  "muted": "#93A4BB",
+  "accent": "#6EA8FE",
+  "cyan": "#7DD3FC",
+  "selection": "#17375E",
+  "border": "#16243B",
+  "surface": "#050B14",
+  "font": "JetBrainsMono Nerd Font Mono",
+  "ansi": [
+    "#000000", "#FF7B86", "#8BD5A0", "#EBCB8B",
+    "#6EA8FE", "#B8A1E3", "#7DD3FC", "#D6E2F0",
+    "#75859D", "#FFA4AD", "#B3E6BF", "#F5DFA7",
+    "#9CC4FF", "#D2BDF4", "#A7E4FF", "#EFF6FF"
+  ]
+}

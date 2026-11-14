@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Oh My Posh",
+    "version": "32.0.0",
+    "filename": "posh-linux-amd64",
+    "url": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v32.0.0/posh-linux-amd64",
+    "sha256": "55f9b15e49827bf2d79bdafde28e93808b6f84be7677db8e3b2196772b081a26",
+    "license": "MIT"
+  },
+  {
+    "name": "JetBrains Mono Nerd Font",
+    "version": "3.5.1",
+    "filename": "JetBrainsMono.tar.xz",
+    "url": "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/JetBrainsMono.tar.xz",
+    "sha256": "04d5e8f903693f9dd13e16f867e994834e681eb3c72c0d337a770dcda09010cf",
+    "license": "OFL-1.1"
+  },
+  {
+    "name": "ble.sh",
+    "version": "0.4.0-devel3-2",
+    "filename": "ble-0.4.0-devel3-2.tar.xz",
+    "url": "https://github.com/akinomyoga/ble.sh/releases/download/v0.4.0-devel3/ble-0.4.0-devel3-2.tar.xz",
+    "sha256": "bdcdcfff216495403adf82a701fe41675f64b64644dc77caabd3e015871ebd61",
+    "license": "BSD-3-Clause"
+  }
+]

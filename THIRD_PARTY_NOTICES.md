@@ -59,6 +59,17 @@ package-provided upstream notices.
 - https://github.com/tmux/tmux
 - https://github.com/aristocratos/btop
 
+The opt-in shared Bash appearance add-on pins Oh My Posh (MIT), JetBrains Mono
+Nerd Font (OFL-1.1) and ble.sh (BSD-3-Clause) in `locks/terminal-amd64.json`.
+The Oh My Posh notice is retained in `LICENSES/oh-my-posh.txt`; font and ble.sh
+archives retain their supplied licences during installation. These inputs are
+separate from the base recovery kit's SPDX inventory. No third-party binaries
+or font archives are committed to Git.
+
+- https://github.com/JanDeDobbeleer/oh-my-posh
+- https://github.com/ryanoasis/nerd-fonts
+- https://github.com/akinomyoga/ble.sh
+
 The bundled PPA key is public, fingerprint
 A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E. It is scoped with Signed-By;
 no apt-key, insecure download option or anonymous root installer is used.

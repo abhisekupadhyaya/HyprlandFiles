@@ -4,7 +4,7 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 129,
+    "passed": 137,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
@@ -81,5 +81,17 @@
   },
   "existing_host_failures": [
     "systemd-networkd-wait-online.service failed before installation; not reset or changed"
-  ]
+  ],
+  "bash_terminal_addon": {
+    "inputs": 3,
+    "installed_on_existing_host": true,
+    "terminal_background": "#000000",
+    "bash": "5.3.9",
+    "native_ghostty_and_vscode_hooks": true,
+    "history_suggestion_acceptance": "PASS through Ghostty and VS Code startup scripts and with tmux terminal type",
+    "idempotent_reapplication": true,
+    "physical_gui_appearance_confirmed": false,
+    "remote_client_font_installation_confirmed": false,
+    "base_recovery_kit_includes_addon_inputs": false
+  }
 }
