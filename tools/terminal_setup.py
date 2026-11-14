@@ -31,33 +31,72 @@ def managed_block(text,body,begin=BEGIN,end=END):
 
 
 def prompt(p):
-    def ribbon(kind,template,color,background,options=None,min_width=0):
-        result=dict(type=kind,style='diamond',foreground=color,background=background,
-                    leading_diamond='\ue0b2',trailing_diamond='\ue0b0',template=template)
+    def segment(kind,template,color,background='transparent',options=None,min_width=0):
+        result=dict(type=kind,style='plain' if background=='transparent' else 'diamond',
+                    foreground=color,background=background,
+                    leading_diamond='',trailing_diamond='\ue0b0',template=template)
         if options:result['options']=options
         if min_width:result['min_width']=min_width
         return result
-    memory=(' {{ round .PhysicalPercentUsed 1 }}% RAM:'
-            '{{ round (divf (sub .PhysicalTotalMemory .PhysicalAvailableMemory) 1073741824) 1 }}/'
-            '{{ round (divf .PhysicalTotalMemory 1073741824) 0 }}GiB \uf2db ')
-    plain=lambda kind,text,color:dict(type=kind,style='plain',foreground=color,background='transparent',template=text)
+    # Environment labels use exported activation markers only. Never start a
+    # Python/Conda/pyenv interpreter or read .env files to draw the prompt.
+    environment=(
+        '{{- $name := "" -}}{{- $prefix := "" -}}{{- $icon := "\ue73c" -}}'
+        '{{- if .Env.VIRTUAL_ENV -}}'
+        '{{- $name = base (clean .Env.VIRTUAL_ENV) -}}'
+        '{{- if and .Env.VIRTUAL_ENV_PROMPT (not (has .Env.VIRTUAL_ENV_PROMPT (list ".venv" "venv" "env"))) -}}'
+        '{{- $name = trimAll "() " .Env.VIRTUAL_ENV_PROMPT -}}'
+        '{{- else if has $name (list ".venv" "venv" "env") -}}'
+        '{{- $name = base (dir (clean .Env.VIRTUAL_ENV)) -}}{{- end -}}'
+        '{{- else if or .Env.CONDA_DEFAULT_ENV .Env.CONDA_PREFIX -}}'
+        '{{- $prefix = "conda:" -}}{{- $name = base (coalesce .Env.CONDA_DEFAULT_ENV .Env.CONDA_PREFIX) -}}'
+        '{{- else if and .Env.PYENV_VERSION (ne .Env.PYENV_VERSION "system") -}}'
+        '{{- $name = .Env.PYENV_VERSION -}}'
+        '{{- else if .Env.DIRENV_DIR -}}'
+        '{{- $icon = "env" -}}{{- $name = base (trimPrefix "-" .Env.DIRENV_DIR) -}}'
+        '{{- end -}}'
+        '{{- if $name -}}{{- if gt (len $name) 18 -}}'
+        '{{- $name = printf "%s…%s" (trunc 8 $name) (trunc -8 $name) -}}{{- end }}'
+        ' {{ $icon }} {{ $prefix }}{{ $name }} {{ end }}')
+    location=(
+        ' {{ if eq .Path "~" }}\uf015 ~'
+        '{{ else }}\uf07b '
+        '{{ if and .Segments.Git (ne .Segments.Git.RepoName .Path) }}'
+        '{{ abbrev 15 .Segments.Git.RepoName }}/{{ abbrev 14 .Path }}'
+        '{{ else }}{{ abbrev 24 .Path }}{{ end }}{{ end }} ')
+    branch=(
+        ' \ue0a0 {{ if .Detached }}{{ .HEAD }}{{ else }}'
+        '{{ $branch := .Ref }}{{ if gt (len $branch) 22 }}'
+        '{{ if contains "/" $branch }}{{ trunc 6 (first (splitList "/" $branch)) }}/…{{ trunc -12 $branch }}'
+        '{{ else }}{{ abbrev 22 $branch }}{{ end }}'
+        '{{ else }}{{ $branch }}{{ end }}{{ end }}'
+        '{{ if .Working.Changed }} <'+p['ansi'][3]+'>*</>{{ end }}'
+        '{{ if .Staging.Changed }} +{{ end }} ')
+    location_segment=segment('path',location,p['foreground'],p['ribbon_navy'],dict(style='folder',home_icon='~'))
+    location_segment['leading_diamond']='\ue0b6'
+    indicator=segment('status','\u276f',p['accent'],options=dict(always_enabled=True))
+    indicator['foreground_templates']=['{{ if ne .Code 0 }}'+p['ansi'][1]+'{{ end }}']
     return {'$schema':'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/v32.0.0/themes/schema.json',
         'version':4,'final_space':True,'terminal_background':p['background'],
         'shell_integration':False,'enable_cursor_positioning':False,
         'blocks':[
             dict(type='prompt',alignment='left',newline=True,segments=[
-                plain('session',' \uf31b {{ .UserName }}@{{ .HostName }} ',p['accent']),
-                ribbon('sysinfo',memory,p['ink'],p['ribbon_cyan'],min_width=75),
-                ribbon('executiontime',' {{ .FormattedMs }} ',p['foreground'],p['ribbon_blue'],dict(threshold=0,style='austin'))]),
-            dict(type='prompt',alignment='left',newline=True,segments=[
-                plain('text','\u2570\u2500',p['cyan']),
-                ribbon('shell',' \uf120 {{ .Name }} ',p['ink'],p['ribbon_cyan']),
-                ribbon('time',' \uf017 {{ .CurrentDate | date "03:04:05 PM MST | Monday" }} \uf073 ',
-                       p['foreground'],p['ribbon_blue'],min_width=100),
-                ribbon('path',' \uf015 {{ .Path }} ',p['foreground'],p['ribbon_navy'],dict(style='agnoster_short',max_depth=2)),
-                ribbon('git',' \ue0a0 {{ .HEAD }}{{ if .Working.Changed }} *{{ end }}{{ if .Staging.Changed }} +{{ end }} ',
-                       p['ink'],p['accent'],dict(branch_icon='',commit_icon='commit:',tag_icon='tag:'),min_width=70),
-                ribbon('status',' \uf00d {{ .Code }} ',p['ink'],p['ansi'][1])])
+                segment('session','\uf489 {{ .UserName }}@{{ .HostName }}  ',p['muted']),
+                location_segment,
+                segment('git',branch,p['accent'],p['surface'],dict(branch_icon='',commit_icon='commit:',tag_icon='tag:'),min_width=110),
+                segment('text',environment,p['ink'],p['ribbon_cyan']),
+                # The Node badge is project-scoped. NVM already exports the
+                # selected version in its activation path: no node/npm process
+                # or version-cache invalidation is required to display it.
+                segment('node',' \ue719 {{ if .Env.NVM_BIN }}{{ $version := base (dir (clean .Env.NVM_BIN)) }}'
+                    '{{ if regexMatch "^v[0-9]+[.][0-9]+[.][0-9]+$" $version }}{{ trimPrefix "v" $version }}'
+                    '{{ else }}node{{ end }}{{ else }}node{{ end }} ',p['cyan'],p['ribbon_navy'],
+                    dict(display_mode='files',extensions=['package.json','.nvmrc','.node-version','pnpm-workspace.yaml'],
+                         project_files=['package.json','pnpm-workspace.yaml'],
+                         fetch_package_manager=False,cache_duration='none'),min_width=75),
+                segment('executiontime','  {{ .FormattedMs }}',p['muted'],options=dict(threshold=2000,style='austin')),
+                segment('status','  exit {{ .Code }}',p['ansi'][1])]),
+            dict(type='prompt',alignment='left',newline=True,segments=[indicator])
         ]}
 
 
