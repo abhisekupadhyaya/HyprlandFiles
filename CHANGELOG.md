@@ -2,6 +2,8 @@
 
 ## 0.1.0-rc.3 — 2026-11-13
 
+- Remove PipeWire filter-chain default-target activation so a closed-lid boot
+  cannot start desktop audio through its dependency on PipeWire.
 - Wait for GSettings backend notifications before appearance readback, while
   retaining errors for persistent mismatches. Native checks use a private runtime
   directory and work from SSH sessions without XDG_RUNTIME_DIR.
