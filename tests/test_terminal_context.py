@@ -94,7 +94,8 @@ class NativeContext(unittest.TestCase):
     def test_compact_input_and_conditional_feedback(self):
         for width in (40,80,120):
             text,_=self.render({'VIRTUAL_ENV':'/work/vision/.venv'},width=width)
-            self.assertEqual(text.splitlines()[-1],'\u276f ')
+            self.assertTrue(text.startswith('\n\u256d\u2500 '),repr(text))
+            self.assertEqual(text.splitlines()[-1],'\u2570\u2500 \u276f ')
             self.assertIn(getpass.getuser()+'@',text)
             self.assertIn('vision',text)
             for noise in ('RAM:','UTC','33ms','0ms'):

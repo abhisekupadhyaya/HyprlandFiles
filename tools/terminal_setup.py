@@ -80,7 +80,8 @@ def prompt(p):
         'version':4,'final_space':True,'terminal_background':p['background'],
         'shell_integration':False,'enable_cursor_positioning':False,
         'blocks':[
-            dict(type='prompt',alignment='left',newline=True,segments=[
+            dict(type='prompt',alignment='left',newline=False,segments=[
+                segment('text','\n\u256d\u2500 ',p['accent']),
                 segment('session','\uf489 {{ .UserName }}@{{ .HostName }}  ',p['muted']),
                 location_segment,
                 segment('git',branch,p['accent'],p['surface'],dict(branch_icon='',commit_icon='commit:',tag_icon='tag:'),min_width=110),
@@ -96,7 +97,8 @@ def prompt(p):
                          fetch_package_manager=False,cache_duration='none'),min_width=75),
                 segment('executiontime','  {{ .FormattedMs }}',p['muted'],options=dict(threshold=2000,style='austin')),
                 segment('status','  exit {{ .Code }}',p['ansi'][1])]),
-            dict(type='prompt',alignment='left',newline=True,segments=[indicator])
+            dict(type='prompt',alignment='left',newline=True,segments=[
+                segment('text','\u2570\u2500 ',p['accent']),indicator])
         ]}
 
 

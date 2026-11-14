@@ -20,7 +20,9 @@ python3 tools/terminal_setup.py apply --style-only
 ```
 
 Oh My Posh uses one compact row of navy/blue context ribbons above a fixed `❯`
-input marker. It shows `user@host`, project/folder, Git branch
+input marker, joined by a subtle blue `╭─` / `╰─` connector. A leading blank line
+separates the previous command's output from the next prompt; each command keeps
+its context header in scrollback. It shows `user@host`, project/folder, Git branch
 and changed/staged indicators. Long paths and branch names are abbreviated;
 less essential fields hide in narrow terminals. The input marker turns red on
 failure, with the exit code beside the context. Duration appears only above two
@@ -39,10 +41,11 @@ Bash hook suppresses duplicate activation prefixes with
 `VIRTUAL_ENV_DISABLE_PROMPT=1` and `CONDA_CHANGEPS1=false`.
 
 ble.sh supplies Bash history suggestions and syntax highlighting; Right Arrow
-accepts suggestions. Previously entered prompts collapse to the input marker
+accepts suggestions. Optional history compaction collapses previous prompts
 while staying in the same directory and activation context. The first full
 header after a directory/environment change remains as a scrollback landmark.
-Compaction reuses ble.sh's rendered prompt without another prompt process.
+Compaction reuses ble.sh's rendered prompt without another prompt process, and
+removes the leading gap together with the header.
 
 The palette source is `config/terminal/blue-oled.json`: an 80% black tint,
 off-white text, blue/cyan accents and coordinated ANSI colours. The Ghostty
@@ -90,10 +93,10 @@ Bash or disable suggestions without deleting configuration:
 ```sh
 HF_BASH_STYLE=plain bash
 HF_BASH_SUGGESTIONS=0 bash
-HF_PROMPT_TRANSIENT=0 bash
+HF_PROMPT_TRANSIENT=1 bash
 ```
 
-The last option keeps every full prompt header instead of compacting history.
+The last option enables compact history; full spaced headers are the default.
 
 Inputs are pinned in `locks/terminal-amd64.json`. Prepare them without applying:
 

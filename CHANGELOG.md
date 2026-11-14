@@ -4,7 +4,8 @@
 
 - Use compact project/Git ribbons above a fixed input marker, with conditional
   environment badges, failures and slow-command timings. Collapse repeated
-  headers in scrollback while retaining directory/environment boundaries;
+  headers only on opt-in, retaining directory/environment boundaries. Keep full
+  connected headers with a blank line above each command block by default;
   resolve Python/Conda/pyenv/direnv and NVM context without interpreter probes.
 - Add black-tinted Ghostty glass and stronger Hyprland blur; preserve existing
   typography with `--style-only`. Export VS Code's native glass settings for the

@@ -27,13 +27,13 @@ if [[ ${BLE_VERSION:-} ]]; then
     bleopt complete_auto_complete=1
     bleopt prompt_eol_mark='%'
     ble-face -s auto_complete fg='#93A4BB'
-    # Trim previously drawn header rows with ble's existing render data. No
-    # extra Oh My Posh process is needed. Keep the first header after context
-    # changes so scrollback still records directory/environment boundaries.
+    # Keep the header and its leading blank line for each command by default.
+    # Optional compaction reuses ble's render data without another process;
+    # preserve the first header after activation-context changes when enabled.
     _hf_prompt_transient() {
         local previous_status=$? desired= context
         context="${VIRTUAL_ENV-}"$'\037'"${VIRTUAL_ENV_PROMPT-}"$'\037'"${CONDA_PREFIX-}"$'\037'"${CONDA_DEFAULT_ENV-}"$'\037'"${PYENV_VERSION-}"$'\037'"${NVM_BIN-}"$'\037'"${DIRENV_DIR-}"
-        if [[ ${HF_PROMPT_TRANSIENT:-1} != 0 && ${_HF_PROMPT_CONTEXT+x} &&
+        if [[ ${HF_PROMPT_TRANSIENT:-0} == 1 && ${_HF_PROMPT_CONTEXT+x} &&
               $_HF_PROMPT_CONTEXT == "$context" ]]; then
             desired=same-dir:trim
         fi
