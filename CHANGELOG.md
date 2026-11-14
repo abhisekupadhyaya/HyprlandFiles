@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.0-rc.3 — 2026-11-13
+
+- Provide a terminal-first desktop with Ghostty, Yazi, Superfile, Wiremix,
+  Bluetui, tmux and btop; retain authenticated login and both lifecycle profiles.
+- Fix the Server mode menu command and restrict the managed session launcher
+  to authenticated local greetd sessions; cover cancellation and rejected entrypoints.
+- Retain four TUI inputs and all 219 Wiremix registry crates in the 36-artifact
+  recovery kit. Build Wiremix offline with a private Cargo vendor configuration
+  as the desktop user; preserve binary backups, conflicts and rollback.
+- Recover six superseded PPA packages through their original Launchpad build
+  files with unchanged hashes; use exact verified archives when APT no longer
+  lists a pinned version.
+- Exercise kit/online staging, build failures, archive validation and vendor
+  reproducibility. Use a private GSettings schema for minimal-host tests.
+- Update CI action pins through reviewed PRs #2 and #3. Clean-machine, native
+  compositor and physical hardware acceptance of this candidate remain open;
+  the login/installer changes still require independent maintainer review.
+
 ## 0.1.0-rc.2 — 2026-10-31
 
 - Default to dark OS/application appearance through per-user GSettings, GTK3/4

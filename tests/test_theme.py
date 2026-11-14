@@ -45,7 +45,7 @@ class Theme(unittest.TestCase):
         palette=json.loads((second/'palette.json').read_text())
         self.assertGreaterEqual(min(palette['contrast'].values()),4.5)
         accent=palette['ui']['accent'][1:]
-        for name in ('hyprland.lua','kitty.conf','fuzzel.ini','hyprlock-colors.conf','colors.css','greetd.css'):
+        for name in ('hyprland.lua','ghostty.conf','fuzzel.ini','hyprlock-colors.conf','colors.css','greetd.css'):
             self.assertIn(accent,(second/name).read_text(),name)
         with patch.object(theme,'generate',side_effect=AssertionError('restore must never regenerate')):
             with patch.object(sys,'argv',['hf-theme','restore','--no-apply']):

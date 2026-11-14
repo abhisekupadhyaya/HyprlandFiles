@@ -7,7 +7,7 @@ closed and starts graphical login when it opens.
 
 ![Original royal-blue wallpaper included with the project](assets/royal-blue.png)
 
-**0.1.0-rc.2 — release candidate.** Ubuntu **26.04 amd64** is the initial target.
+**0.1.0-rc.3 — release candidate.** Ubuntu **26.04 amd64** is the initial target.
 The configuration originates from a working installation; the portable installer
 has isolated transaction, rollback, lifecycle and protocol tests. A clean-machine
 end-to-end install is still a release gate. This is not a universal hardware or
@@ -55,7 +55,10 @@ configuration directories are never replaced. Keep personal Lua additions in
 - Hyprland **0.57.0 Lua** config, pinned as a compatible ABI stack; other Hypr
   tools retain their own supported configuration formats.
 - **pywal16** colours derived from a still wallpaper, cached before login and
-  coordinated across Hyprland, Waybar, Kitty, Fuzzel, notifications and hyprlock.
+  coordinated across Hyprland, Waybar, Ghostty, Fuzzel, notifications and hyprlock.
+- Yazi, Superfile, Wiremix and Bluetui handle files, audio and Bluetooth in
+  Ghostty or over SSH. tmux retains remote shells, commands and pane layouts
+  across SSH disconnections; btop provides system monitoring.
 - A dark system appearance by default (GTK and standard app portal), with
   fresh VS Code preferences following the OS. Existing VS Code customization is preserved.
 - The included original blue artwork; change it with **Super+Alt+W** or
@@ -123,9 +126,10 @@ publishing, shell replacements or remote dotfile installers are included.
 
 ## Keep a reinstall archive
 
-Version pins are not a backup. A recovery kit retains all 28 locked desktop
+Version pins are not a backup. A recovery kit retains all 26 locked desktop
 packages, the patched greeter and original build input, and the three colour-
-runtime wheels. Its 33 artifact hashes and package identities are checked against
+runtime wheels, plus four terminal tool inputs and a Wiremix dependency archive.
+Its 36 artifact hashes and package identities are checked against
 [the manifest in Git](locks/recovery-ubuntu-26.04-amd64.json), not a manifest that
 an untrusted download supplies for itself.
 
@@ -139,17 +143,24 @@ Keep a separate backup of that release archive. For a standalone retained kit:
 ./install.sh --bundle /path/to/recovery-kit
 ```
 
+Wiremix builds as the desktop account with no network access to Cargo; all 219
+registry dependencies are retained and checked against its upstream lockfile.
 The kit removes reliance on old desktop binaries staying in the PPA. Normal
 Ubuntu dependencies still use signed Ubuntu repositories and security updates;
 this is not a full offline OS image or cross-release ABI emulator. See
 [reproducibility](docs/reproducibility.md) for retention and release preparation.
+
+Source-only installation also uses the exact Git-hashed Ubuntu/Launchpad build
+archives when signed APT indexes no longer list a pinned desktop version. It
+never substitutes a newer release. Retain a kit independently of those servers.
 
 ## Contribute
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [maintainer policy](MAINTAINERS.md),
 [release gates](docs/releases.md) and the [roadmap](ROADMAP.md). Run `./scripts/check.sh` for offline
 standard-library checks. Extended palette tests use checksum-verified locked
-wheels: `python3 tools/prepare_dev.py`, then `./scripts/check.sh`. These commands
+wheels: `python3 tools/prepare_dev.py`, then `./scripts/check.sh`. Terminal input
+retention uses `python3 tools/prepare_tui.py`. These commands
 need no sudo and never activate login, log out, or reboot.
 
 MIT for original code/config/artwork; retained upstream notices cover the small

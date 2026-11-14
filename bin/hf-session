@@ -33,8 +33,9 @@ def run_session(guard,runtime,env,launcher=('/usr/bin/start-hyprland',)):
 
 def main():
     sid=os.environ.get('XDG_SESSION_ID','')
-    if not sid or property(sid,'Remote')!='no' or property(sid,'Seat')!='seat0':
-        raise RuntimeError('Only a local seat0 session may start the managed desktop')
+    if (not sid or property(sid,'Remote')!='no' or property(sid,'Seat')!='seat0'
+            or property(sid,'Class')!='user' or property(sid,'Service')!='greetd'):
+        raise RuntimeError('Only an authenticated local seat0 greetd session may start the managed desktop')
     if property(sid,'User')!=str(os.getuid()):raise RuntimeError('Session owner mismatch')
     env=dict(os.environ,XDG_SESSION_TYPE='wayland',XDG_CURRENT_DESKTOP='Hyprland',XDG_SESSION_DESKTOP='Hyprland')
     gpu=gpu_device(settings().get("gpu","auto"))

@@ -88,9 +88,13 @@ class Transactions(unittest.TestCase):
         self.assertIsNone(Transaction(self.store,self.home,managed_state(self.store)).apply(ops))
         lua=(self.home/'.config/hypr/hyprland.lua').read_text()
         self.assertNotIn('@HOME@',lua);self.assertIn('if true then',lua)
+        self.assertIn('ghostty -e '+str(self.home/'.local/bin/yazi'),lua)
+        entry=(self.home/'.local/share/applications/hf-yazi.desktop').read_text()
+        self.assertNotIn('@HOME@',entry)
+        self.assertIn(str(self.home/'.local/bin/yazi'),entry)
         self.tx.rollback(snapshot)
         self.assertEqual(unrelated.read_text(),'-- personal')
-        self.assertFalse((self.home/'.config/kitty/kitty.conf').exists())
+        self.assertFalse((self.home/'.config/ghostty/config.ghostty').exists())
 
     def test_entire_system_payload_in_disposable_root(self):
         from types import SimpleNamespace
@@ -114,7 +118,7 @@ class ActivationSafety(unittest.TestCase):
     def test_user_failure_never_enables_controller(self):
         from types import SimpleNamespace
         a=SimpleNamespace(profile='desktop',scale='auto',gpu='auto',keyboard='us',yes=True,adopt=False)
-        with patch.object(installer,'plan'),patch.object(installer,'no_gui'),patch.object(installer,'Transaction'),patch.object(installer,'run') as run,patch.object(installer,'user_install',side_effect=ValueError('user config conflict')):
+        with tempfile.TemporaryDirectory() as home,patch.object(Path,'home',return_value=Path(home)),patch.object(installer,'plan'),patch.object(installer,'no_gui'),patch.object(installer,'Transaction'),patch.object(installer,'run') as run,patch.object(installer,'user_install',side_effect=ValueError('user config conflict')):
             with self.assertRaises(ValueError):installer.setup(a)
         self.assertEqual(len(run.call_args_list),1)
         self.assertEqual(run.call_args.args[0][3],'system')

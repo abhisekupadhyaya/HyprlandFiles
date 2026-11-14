@@ -32,7 +32,7 @@ def generate(root):
                 name='HyprlandFiles '+version+' retained release inputs',
                 documentNamespace='https://github.com/abhisekupadhyaya/HyprlandFiles/spdx/'+str(namespace),
                 creationInfo=dict(creators=['Tool: HyprlandFiles-sbom-'+version],created=created),
-                comment='Inventory of the 33 retained desktop/greeter/wheel artifacts only. Excludes source files, transitive target OS packages and firmware. NOASSERTION licensing requires upstream review before binary publication.',
+                comment='Inventory of retained desktop/greeter/wheel/TUI inputs, including the Wiremix vendor archive. Excludes project source files, transitive target OS packages and firmware. NOASSERTION licensing requires upstream review before binary publication.',
                 packages=packages,relationships=relationships)
 
 

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Superfile
+Comment=Browse files side by side
+Exec=/usr/bin/ghostty -e @HOME@/.local/bin/spf %f
+Categories=System;FileTools;FileManager;
+Terminal=false

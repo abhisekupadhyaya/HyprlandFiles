@@ -1,17 +1,17 @@
 {
   "schema": 1,
-  "version": "0.1.0-rc.2",
-  "date": "2026-10-31",
+  "version": "0.1.0-rc.3",
+  "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 94,
-    "scope": "isolated filesystem, lifecycle, IPC, hardware selection, palette and activation safety",
+    "passed": 116,
+    "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
   "native_parsers": {
-    "Hyprland 0.57.0": "desktop auto scale and laptop-server scale 2 pass",
-    "Fuzzel": "both generated config profiles pass",
-    "systemd": "controller unit syntax passes with private executable path; unrelated host xfs_scrub CPUAccounting deprecation warnings observed"
+    "Hyprland 0.57.0": "Not rerun for rc.3; native binaries unavailable in the preparation environment",
+    "Fuzzel": "Not rerun for rc.3; native binaries unavailable in the preparation environment",
+    "Ghostty": "Not rerun for rc.3; native binaries unavailable in the preparation environment"
   },
   "greeter_build": {
     "version": "0.4.2-1+hf1",
@@ -19,28 +19,34 @@
     "sha256": "5f9bd607b00c3fef2da6918490d10bf612f42a3a9a6d3fda11dadb024b3e3976"
   },
   "package_simulation": {
-    "environment": "existing compatible Ubuntu installation; not a clean image",
-    "exit_code": 0,
-    "removals": 0,
-    "install_executed": false
+    "install_executed": false,
+    "executed_for_this_candidate": false
   },
   "key_fingerprint_verified": "A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E",
   "public_source_audit": "no credential patterns or original private machine identifiers found; local state and caches excluded",
   "not_verified": [
-    "Fresh Ubuntu Server installation of the portable release through APT",
-    "Physical authentication, TTY, lid/reboot and complete session acceptance of portable runtime paths",
+    "Fresh Ubuntu Server installation of this candidate through APT and retained kit",
+    "Native Hyprland, Fuzzel and Ghostty validation for rc.3",
+    "Real Wiremix compilation with the retained vendor archive and Ubuntu compiler dependencies",
+    "Physical authentication, TTY, lid/reboot, tmux SSH persistence and complete session acceptance",
     "Broader GPU, external monitor and sustained thermal/battery validation",
-    "GitHub CI run before first push",
-    "Off-machine backup and public distribution of the prepared recovery archive"
+    "Independent human review of the login/installer changes",
+    "Successful GitHub CI for rc.3; latest feature run was blocked by account billing",
+    "Off-machine backup and public distribution of the recovery archive"
   ],
   "recovery_kit": {
-    "artifacts": 33,
-    "locked_desktop_packages": 28,
-    "artifact_hashes_verified": true,
+    "artifacts": 36,
+    "locked_desktop_packages": 26,
+    "terminal_inputs": 4,
+    "wiremix_vendor_crates": 219,
+    "terminal_hashes_verified": true,
+    "vendor_rebuilt_offline_with_identical_hash": true,
+    "complete_kit_verified": true,
     "git_manifest": "locks/recovery-ubuntu-26.04-amd64.json",
-    "binary_location": "retained separately from Git",
-    "archive_reproducibility": "isolated fixture test passes; real archive extraction checks are recorded outside the source tree",
-    "fresh_install_executed": false
+    "binary_location": "ignored local cache; no off-machine retention claimed",
+    "fresh_install_executed": false,
+    "superseded_packages_recovered_from_original_launchpad_builds": 6,
+    "archive_reproducibility": "Fixture archives are deterministic; all 36 real retained inputs verify against Git and package identities"
   },
   "project_standards": {
     "maintainer_policy": "MAINTAINERS.md",
@@ -52,9 +58,13 @@
   },
   "dark_appearance": {
     "user_preferences": "prefer-dark; GTK Adwaita-dark",
-    "portal_readback": "org.freedesktop.appearance color-scheme = 1",
+    "portal_readback": "Prior rc.2 observation only; not rerun for rc.3",
     "vscode_default": "OS detection; installed dark theme ID chosen from package metadata when available",
-    "native_settings_validation": "Gio memory-backend tests, plus live readback of the two selected preferences",
+    "native_settings_validation": "Gio memory-backend tests with a private test schema; no live preferences changed",
     "fresh_vm_validation": false
+  },
+  "review": {
+    "independent_human_review": false,
+    "release_gate": "Root/login changes require maintainer review before merge/release"
   }
 }

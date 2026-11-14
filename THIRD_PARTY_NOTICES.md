@@ -42,6 +42,23 @@ Primary release-specific sources:
 - https://github.com/eylles/pywal16
 - https://sw.kovidgoyal.net/kitty/conf/
 
+The terminal-first runtime uses Ghostty, Yazi, Superfile, Wiremix and Bluetui.
+Their binary/source inputs retain their upstream licensing; they are not covered
+by the project's MIT grant. The recovery kit preserves the original downloaded
+tool archives and Wiremix registry source crates, including their supplied
+notices. The generated vendor checksum files are integrity metadata. Review the
+licences and source obligations of these inputs before distributing a binary kit.
+tmux, btop, BlueZ and preview/build tools are ordinary Ubuntu packages with their
+package-provided upstream notices.
+
+- https://github.com/ghostty-org/ghostty
+- https://github.com/sxyazi/yazi
+- https://github.com/yorukot/superfile
+- https://github.com/tsowell/wiremix
+- https://github.com/pythops/bluetui
+- https://github.com/tmux/tmux
+- https://github.com/aristocratos/btop
+
 The bundled PPA key is public, fingerprint
 A54D23B62FF3FCC76EFF71E8FDBAAA1CF0CCF48E. It is scoped with Signed-By;
 no apt-key, insecure download option or anonymous root installer is used.

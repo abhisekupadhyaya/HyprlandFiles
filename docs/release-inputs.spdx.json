@@ -2,15 +2,15 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "HyprlandFiles 0.1.0-rc.2 retained release inputs",
-  "documentNamespace": "https://github.com/abhisekupadhyaya/HyprlandFiles/spdx/a5aca017-c54d-578d-84dd-575c2d1a64fb",
+  "name": "HyprlandFiles 0.1.0-rc.3 retained release inputs",
+  "documentNamespace": "https://github.com/abhisekupadhyaya/HyprlandFiles/spdx/50c185ae-a9cf-594f-8833-802c0ce66a1f",
   "creationInfo": {
     "creators": [
-      "Tool: HyprlandFiles-sbom-0.1.0-rc.2"
+      "Tool: HyprlandFiles-sbom-0.1.0-rc.3"
     ],
     "created": "2026-10-30T18:00:00Z"
   },
-  "comment": "Inventory of the 33 retained desktop/greeter/wheel artifacts only. Excludes source files, transitive target OS packages and firmware. NOASSERTION licensing requires upstream review before binary publication.",
+  "comment": "Inventory of retained desktop/greeter/wheel/TUI inputs, including the Wiremix vendor archive. Excludes project source files, transitive target OS packages and firmware. NOASSERTION licensing requires upstream review before binary publication.",
   "packages": [
     {
       "name": "fuzzel",
@@ -28,6 +28,23 @@
         }
       ],
       "sourceInfo": "Retained release input: packages/fuzzel_1.12.0+ds-1build1_amd64.deb"
+    },
+    {
+      "name": "ghostty",
+      "SPDXID": "SPDXRef-package-ghostty",
+      "versionInfo": "1.3.0~us1-0ubuntu1.1",
+      "downloadLocation": "https://archive.ubuntu.com/ubuntu/pool/universe/g/ghostty/ghostty_1.3.0~us1-0ubuntu1.1_amd64.deb",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8614ef9bcdf22da2efe7c63eac67bc61b9fabade823b060bb9580560e94f4acd"
+        }
+      ],
+      "sourceInfo": "Retained release input: packages/ghostty_1.3.0~us1-0ubuntu1.1_amd64.deb"
     },
     {
       "name": "gir1.2-gtklayershell-0.1",
@@ -118,7 +135,7 @@
       "name": "hyprland",
       "SPDXID": "SPDXRef-package-hyprland",
       "versionInfo": "0.57.0-1ppa2~1resolute1",
-      "downloadLocation": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprland/hyprland_0.57.0-1ppa2~1resolute1_amd64.deb",
+      "downloadLocation": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33880748/+files/hyprland_0.57.0-1ppa2~1resolute1_amd64.deb",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -135,7 +152,7 @@
       "name": "hyprlock",
       "SPDXID": "SPDXRef-package-hyprlock",
       "versionInfo": "0.9.6-1ppa1~1resolute1",
-      "downloadLocation": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprlock/hyprlock_0.9.6-1ppa1~1resolute1_amd64.deb",
+      "downloadLocation": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33414500/+files/hyprlock_0.9.6-1ppa1~1resolute1_amd64.deb",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -152,7 +169,7 @@
       "name": "hyprpaper",
       "SPDXID": "SPDXRef-package-hyprpaper",
       "versionInfo": "0.8.4-1ppa3~1resolute1",
-      "downloadLocation": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprpaper/hyprpaper_0.8.4-1ppa3~1resolute1_amd64.deb",
+      "downloadLocation": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33583728/+files/hyprpaper_0.8.4-1ppa3~1resolute1_amd64.deb",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -186,7 +203,7 @@
       "name": "hyprshutdown",
       "SPDXID": "SPDXRef-package-hyprshutdown",
       "versionInfo": "0.1.1-1ppa3~1resolute1",
-      "downloadLocation": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprshutdown/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb",
+      "downloadLocation": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33583732/+files/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -198,57 +215,6 @@
         }
       ],
       "sourceInfo": "Retained release input: packages/hyprshutdown_0.1.1-1ppa3~1resolute1_amd64.deb"
-    },
-    {
-      "name": "kitty-shell-integration",
-      "SPDXID": "SPDXRef-package-kitty-shell-integration",
-      "versionInfo": "0.45.0-1build1",
-      "downloadLocation": "https://archive.ubuntu.com/ubuntu/pool/universe/k/kitty/kitty-shell-integration_0.45.0-1build1_all.deb",
-      "filesAnalyzed": false,
-      "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "NOASSERTION",
-      "copyrightText": "NOASSERTION",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "8274151a9933c9e1bd1f8abee3d72e2fd95ee0ba19a148941684e2e04b4d2afa"
-        }
-      ],
-      "sourceInfo": "Retained release input: packages/kitty-shell-integration_0.45.0-1build1_all.deb"
-    },
-    {
-      "name": "kitty-terminfo",
-      "SPDXID": "SPDXRef-package-kitty-terminfo",
-      "versionInfo": "0.45.0-1build1",
-      "downloadLocation": "https://archive.ubuntu.com/ubuntu/pool/universe/k/kitty/kitty-terminfo_0.45.0-1build1_all.deb",
-      "filesAnalyzed": false,
-      "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "NOASSERTION",
-      "copyrightText": "NOASSERTION",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "4a7533568160ea6759ec224b339c39533d8164c093189881a9f16fe08f75c795"
-        }
-      ],
-      "sourceInfo": "Retained release input: packages/kitty-terminfo_0.45.0-1build1_all.deb"
-    },
-    {
-      "name": "kitty",
-      "SPDXID": "SPDXRef-package-kitty",
-      "versionInfo": "0.45.0-1build1",
-      "downloadLocation": "https://archive.ubuntu.com/ubuntu/pool/universe/k/kitty/kitty_0.45.0-1build1_amd64.deb",
-      "filesAnalyzed": false,
-      "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "NOASSERTION",
-      "copyrightText": "NOASSERTION",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "2c173c48f3f34f587690c823b33088b8a84ed5a904a275ff277e7a328baf0659"
-        }
-      ],
-      "sourceInfo": "Retained release input: packages/kitty_0.45.0-1build1_amd64.deb"
     },
     {
       "name": "labwc",
@@ -288,7 +254,7 @@
       "name": "libhyprcursor1",
       "SPDXID": "SPDXRef-package-libhyprcursor1",
       "versionInfo": "0.1.13-1ppa1~1resolute1",
-      "downloadLocation": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprcursor/libhyprcursor1_0.1.13-1ppa1~1resolute1_amd64.deb",
+      "downloadLocation": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/32798070/+files/libhyprcursor1_0.1.13-1ppa1~1resolute1_amd64.deb",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -339,7 +305,7 @@
       "name": "libhyprtoolkit6",
       "SPDXID": "SPDXRef-package-libhyprtoolkit6",
       "versionInfo": "0.6.0-1ppa3~1resolute1",
-      "downloadLocation": "https://ppa.launchpadcontent.net/cppiber/hyprland/ubuntu/pool/main/h/hyprtoolkit/libhyprtoolkit6_0.6.0-1ppa3~1resolute1_amd64.deb",
+      "downloadLocation": "https://launchpad.net/~cppiber/+archive/ubuntu/hyprland/+build/33587049/+files/libhyprtoolkit6_0.6.0-1ppa3~1resolute1_amd64.deb",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -523,6 +489,91 @@
       "sourceInfo": "Retained release input: sources/nwg-hello-original.deb"
     },
     {
+      "name": "Bluetui",
+      "SPDXID": "SPDXRef-tui-Bluetui",
+      "versionInfo": "0.8.2",
+      "downloadLocation": "https://github.com/pythops/bluetui/releases/download/v0.8.2/bluetui-x86_64-linux-musl",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b476ee473cb4f7a48cd75d440e991bedc835ff5ac704aac1f1992f8e826222fd"
+        }
+      ],
+      "sourceInfo": "Retained release input: tui/bluetui-x86_64-linux-musl"
+    },
+    {
+      "name": "Superfile",
+      "SPDXID": "SPDXRef-tui-Superfile",
+      "versionInfo": "1.6.0",
+      "downloadLocation": "https://github.com/yorukot/superfile/releases/download/v1.6.0/superfile-linux-v1.6.0-amd64.tar.gz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d45b0e95072629a6aa7983a84eedca9cd7a98861e67ef91be1415496e3dda309"
+        }
+      ],
+      "sourceInfo": "Retained release input: tui/superfile-linux-v1.6.0-amd64.tar.gz"
+    },
+    {
+      "name": "Wiremix",
+      "SPDXID": "SPDXRef-tui-vendor-Wiremix",
+      "versionInfo": "0.11.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "014207253c59b92adba3ebf7b2ed643d10319142bb809ebb201fd1fb83c77fd7"
+        }
+      ],
+      "sourceInfo": "Retained release input: tui/wiremix-0.11.0-vendor.tar"
+    },
+    {
+      "name": "Wiremix",
+      "SPDXID": "SPDXRef-tui-Wiremix",
+      "versionInfo": "0.11.0",
+      "downloadLocation": "https://static.crates.io/crates/wiremix/wiremix-0.11.0.crate",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ed7e41e369d8ec9be6e141d0cf10091e198bc9de40447d81057dcb326cb70351"
+        }
+      ],
+      "sourceInfo": "Retained release input: tui/wiremix-0.11.0.crate"
+    },
+    {
+      "name": "Yazi",
+      "SPDXID": "SPDXRef-tui-Yazi",
+      "versionInfo": "26.9.1",
+      "downloadLocation": "https://github.com/sxyazi/yazi/releases/download/v26.9.1/yazi-x86_64-unknown-linux-gnu.zip",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a02fe91d3304294048c681f010f1100856872a4e98ecf6927328e888d40a6ad2"
+        }
+      ],
+      "sourceInfo": "Retained release input: tui/yazi-x86_64-unknown-linux-gnu.zip"
+    },
+    {
       "name": "colorthief",
       "SPDXID": "SPDXRef-wheel-colorthief-0.2.1-py2.py3-none-any.whl",
       "versionInfo": "0.2.1",
@@ -583,6 +634,11 @@
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-package-ghostty"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-package-gir1.2-gtklayershell-0.1"
     },
     {
@@ -629,21 +685,6 @@
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-package-hyprshutdown"
-    },
-    {
-      "spdxElementId": "SPDXRef-DOCUMENT",
-      "relationshipType": "DESCRIBES",
-      "relatedSpdxElement": "SPDXRef-package-kitty-shell-integration"
-    },
-    {
-      "spdxElementId": "SPDXRef-DOCUMENT",
-      "relationshipType": "DESCRIBES",
-      "relatedSpdxElement": "SPDXRef-package-kitty-terminfo"
-    },
-    {
-      "spdxElementId": "SPDXRef-DOCUMENT",
-      "relationshipType": "DESCRIBES",
-      "relatedSpdxElement": "SPDXRef-package-kitty"
     },
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
@@ -724,6 +765,31 @@
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-source-nwg-hello"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-tui-Bluetui"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-tui-Superfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-tui-vendor-Wiremix"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-tui-Wiremix"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-tui-Yazi"
     },
     {
       "spdxElementId": "SPDXRef-DOCUMENT",

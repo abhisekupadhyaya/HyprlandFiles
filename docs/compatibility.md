@@ -18,9 +18,12 @@ PCI address, connector name, login account or Wi-Fi interface is hardcoded.
 
 The PPA is third-party software, not an Ubuntu support guarantee. Online installs
 require locked versions to remain available there. The optional verified recovery
-kit preserves those desktop binaries and the colour runtime; kit installs use
+kit preserves those desktop binaries, the colour runtime and terminal inputs,
+including Wiremix's complete registry dependencies; kit installs use
 local packages without adding the PPA or compiling the greeter. The checked-in
-manifest covers the release/architecture lock. The source-plus-kit archive is
+manifest covers the release/architecture and terminal locks. Wiremix builds
+offline as the desktop account with Ubuntu's compiler/development dependencies.
+The source-plus-kit archive is
 retained separately from Git; copying only the source repository is not a binary
 backup. Ordinary signed Ubuntu dependencies and security updates remain external.
 

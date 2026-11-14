@@ -9,7 +9,7 @@ if sys.argv[1:] not in ([],['--probe']):sys.exit('Only --probe is supported')
 # semantics; never change the compositor's signal handling.
 signal.signal(signal.SIGCHLD,signal.SIG_DFL)
 command=(['/usr/bin/true'] if sys.argv[1:] else
-         ['/usr/bin/systemctl','--user','stop','swaync.service','thunar.service',
+         ['/usr/bin/systemctl','--user','stop','swaync.service',
           'xdg-desktop-portal-gtk.service',
           'xdg-desktop-portal-hyprland.service'])
 try:

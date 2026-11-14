@@ -11,7 +11,7 @@ return function(programs)
     local function run(command) return hl.dsp.exec_cmd(command) end
     local function terminal_focused()
         local w = hl.get_active_window()
-        return w and (w.class or ""):lower() == "kitty"
+        return w and (w.class or ""):lower() == "com.mitchellh.ghostty"
     end
     local function chord(mods, key)
         -- Separate down/up avoids stuck synthetic modifiers on this release.
@@ -45,7 +45,7 @@ return function(programs)
     app_shortcut("W", "Close tab/window — application handles unsaved work", "CTRL SHIFT")
     app_shortcut("T", "New tab", "CTRL SHIFT")
     app_shortcut("N", "New window", "CTRL SHIFT")
-    app_shortcut("F", "Find; in Kitty, open searchable scrollback", "CTRL SHIFT", "H")
+    app_shortcut("F", "Find; in the terminal, search scrollback", "CTRL SHIFT")
     app_shortcut("A", "Select all in applications")
     app_shortcut("X", "Cut in applications")
     app_shortcut("S", "Save in applications")

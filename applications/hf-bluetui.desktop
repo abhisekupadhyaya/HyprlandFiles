@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Bluetui
+Comment=Manage Bluetooth devices
+Exec=/usr/bin/ghostty -e @HOME@/.local/bin/bluetui
+Categories=Settings;HardwareSettings;
+Terminal=false

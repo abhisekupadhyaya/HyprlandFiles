@@ -16,6 +16,13 @@ is `python3 tools/build_greeter.py`; it fetches a checksum-verified base .deb an
 writes only `.cache`. Native config validation and live hardware acceptance
 belong in a disposable system; never log out a contributor's desktop in CI.
 
+Prepare retained terminal inputs with `python3 tools/prepare_tui.py`; this
+verifies upstream archives and creates the deterministic offline Wiremix vendor
+archive without building or installing the tools. Keep generated archives in
+`.cache`, outside Git. Updating that archive's trust hash is an explicit
+maintainer change with `--write-vendor-lock`, followed by recovery manifest/SBOM
+regeneration and review.
+
 Do not commit backups, inventory of a private machine, caches, package binaries,
 virtual environments, tokens or licence keys. Do not add .git hooks automatically.
 CI has read-only repository permissions and does not install this desktop.

@@ -26,14 +26,12 @@
     "fuzzel": "1.12.0+ds-1build1",
     "gir1.2-gtklayershell-0.1": "0.10.0-1",
     "greetd": "0.10.3-5",
-    "kitty": "0.45.0-1build1",
-    "kitty-shell-integration": "0.45.0-1build1",
-    "kitty-terminfo": "0.45.0-1build1",
     "labwc": "0.9.3-1",
     "libsfdo0": "0.1.4-1",
     "sway-notification-center": "0.12.4-1",
     "waybar": "0.15.0-1",
-    "wlr-randr": "0.4.1-1build1"
+    "wlr-randr": "0.4.1-1build1",
+    "ghostty": "1.3.0~us1-0ubuntu1.1"
   },
   "ppa_packages": [
     "hypridle",
