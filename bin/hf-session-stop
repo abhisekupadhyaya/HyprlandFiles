@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """Stop affected desktop units; report completion to the Lua hook."""
 import signal
+import os
+from pathlib import Path
 import subprocess
 import sys
 
@@ -11,12 +13,24 @@ signal.signal(signal.SIGCHLD,signal.SIG_DFL)
 command=(['/usr/bin/true'] if sys.argv[1:] else
          ['/usr/bin/systemctl','--user','stop','swaync.service',
           'xdg-desktop-portal-gtk.service',
-          'xdg-desktop-portal-hyprland.service'])
+          'xdg-desktop-portal-hyprland.service',
+          'hf-session.target','graphical-session.target'])
 try:
-    result=subprocess.run(command,text=True,capture_output=True,timeout=10)
+    runtime=os.environ.get('XDG_RUNTIME_DIR','/run/user/'+str(os.getuid()))
+    env=dict(os.environ,XDG_RUNTIME_DIR=runtime,DBUS_SESSION_BUS_ADDRESS='unix:path='+str(Path(runtime)/'bus'))
+    result=subprocess.run(command,text=True,capture_output=True,timeout=10,env=env)
     if result.returncode:
         print('HyprlandFiles: helper shutdown failed: '+result.stderr.strip(),file=sys.stderr,flush=True)
     ok=result.returncode==0
+    if ok and not sys.argv[1:]:
+        keys=('WAYLAND_DISPLAY','DISPLAY','HYPRLAND_INSTANCE_SIGNATURE','XDG_CURRENT_DESKTOP',
+              'XDG_SESSION_DESKTOP','XDG_SESSION_TYPE','XDG_SESSION_ID')
+        for cleanup in (['systemctl','--user','unset-environment',*keys],
+                        ['dbus-update-activation-environment',*(key+'=' for key in keys)]):
+            cleaned=subprocess.run(cleanup,text=True,capture_output=True,timeout=3,env=env)
+            if cleaned.returncode:
+                print('HyprlandFiles: session environment cleanup failed: '+cleaned.stderr.strip(),file=sys.stderr,flush=True)
+                ok=False
 except (OSError,subprocess.TimeoutExpired) as exc:
     print('HyprlandFiles: helper shutdown failed: '+str(exc),file=sys.stderr,flush=True)
     ok=False

@@ -28,7 +28,10 @@ def main():
             tx=Transaction(store,home)
             backup=tx.apply(user_operations(root,home,opts,generation))
             env=dict(os.environ,HOME=str(home),XDG_CONFIG_HOME=str(home/'.config'),XDG_CACHE_HOME=str(home/'.cache'),XDG_RUNTIME_DIR=str(runtime))
-            command=['Hyprland','--verify-config','-c',str(home/'.config/hypr/hyprland.lua')]
+            for key in ('HYPRLAND_INSTANCE_SIGNATURE','WAYLAND_DISPLAY','DISPLAY','XDG_SESSION_ID'):
+                env.pop(key,None)
+            # Keep parser probes isolated from a running desktop's user bus.
+            command=['dbus-run-session','--','Hyprland','--verify-config','-c',str(home/'.config/hypr/hyprland.lua')]
             result=subprocess.run(command,text=True,capture_output=True,env=env)
             if result.returncode:
                 print(result.stdout+result.stderr,file=sys.stderr)

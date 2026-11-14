@@ -64,8 +64,9 @@ hl.permission({ binary = ".*",                                      type = "plug
 
 ------------------------------------------------------------------ session start
 hl.on("hyprland.start", function()
-    -- hf-lock (run from hypridle, a user service) finds this session by id.
-    hl.exec_cmd("systemctl --user import-environment XDG_SESSION_ID")
+    -- start-hyprland supplies a watchdog; this target owns helper lifetimes.
+    -- The worker imports the ready compositor environment before activation.
+    hl.exec_cmd("/usr/local/bin/hf-session-start")
     -- polkit accepts an agent only from inside the session it serves, so the
     -- agent runs in this session's scope, not as a user service.
     hl.exec_cmd("systemd-cat -t hyprpolkitagent /usr/local/bin/hf-polkit")
@@ -76,7 +77,7 @@ end)
 
 -- v0.57 emits this event synchronously before stopping the compositor. These
 -- affected packaged clients otherwise fail on Wayland disconnection before the
--- native asynchronous graphical-session teardown reaches them. Stop their
+-- graphical-session teardown reaches them. Stop their
 -- native units first, only when the desktop is actually exiting. No app-kill,
 -- failure-reset or SuccessExitStatus exception is used. Timeout bounds the
 -- wait for systemd; failures remain visible for diagnosis.

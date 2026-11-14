@@ -30,7 +30,10 @@ def off():
     # hyprshutdown warns and requests applications to exit; no timeout force kill.
     # If cancelled, desktop stays alive and the owner can use hf-desktop on.
     ask('off')
-    r=subprocess.run(['hyprshutdown'],check=False)
+    # Double-forking alone does not escape Waybar.service's control group.
+    # Keep the logout client alive while the shutdown hook stops that service.
+    r=subprocess.run(['systemd-run','--user','--scope','--collect','--quiet','--',
+                      'hyprshutdown','--no-fork'],check=False)
     if r.returncode:
         ask('on')
         raise RuntimeError('Logout did not complete; restored automatic login-screen policy.')
