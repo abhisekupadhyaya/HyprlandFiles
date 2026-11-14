@@ -19,10 +19,9 @@ and does not download or replace any fonts or tools:
 python3 tools/terminal_setup.py apply --style-only
 ```
 
-Oh My Posh uses one compact row of navy/blue context ribbons above a fixed `❯`
-input marker, joined by a subtle blue `╭─` / `╰─` connector. A leading blank line
-separates the previous command's output from the next prompt; each command keeps
-its context header in scrollback. It shows `user@host`, project/folder, Git branch
+Oh My Posh uses one minimal row of navy/blue context ribbons above a fixed `❯`
+input marker. One blank line separates the previous command's output from the
+next prompt. It shows `user@host`, project/folder, Git branch
 and changed/staged indicators. Long paths and branch names are abbreviated;
 less essential fields hide in narrow terminals. The input marker turns red on
 failure, with the exit code beside the context. Duration appears only above two
@@ -41,11 +40,13 @@ Bash hook suppresses duplicate activation prefixes with
 `VIRTUAL_ENV_DISABLE_PROMPT=1` and `CONDA_CHANGEPS1=false`.
 
 ble.sh supplies Bash history suggestions and syntax highlighting; Right Arrow
-accepts suggestions. Optional history compaction collapses previous prompts
+accepts suggestions. History compaction collapses previous prompts
 while staying in the same directory and activation context. The first full
 header after a directory/environment change remains as a scrollback landmark.
-Compaction reuses ble.sh's rendered prompt without another prompt process, and
-removes the leading gap together with the header.
+Compaction reuses ble.sh's rendered prompt without another prompt process.
+The gap uses ble.sh's `prompt_ruler=empty-line`, outside the prompt itself, so it
+survives header compaction. Plain Bash without ble.sh uses a leading newline in
+the theme instead. No separator commands or extra processes are launched.
 
 The palette source is `config/terminal/blue-oled.json`: an 80% black tint,
 off-white text, blue/cyan accents and coordinated ANSI colours. The Ghostty
@@ -93,10 +94,10 @@ Bash or disable suggestions without deleting configuration:
 ```sh
 HF_BASH_STYLE=plain bash
 HF_BASH_SUGGESTIONS=0 bash
-HF_PROMPT_TRANSIENT=1 bash
+HF_PROMPT_TRANSIENT=0 bash
 ```
 
-The last option enables compact history; full spaced headers are the default.
+The last option retains every full context header instead of compacting history.
 
 Inputs are pinned in `locks/terminal-amd64.json`. Prepare them without applying:
 

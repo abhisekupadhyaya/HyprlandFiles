@@ -158,9 +158,8 @@ ble-face() { :; }; ble-attach() { :; }; blehook() { :; }
 BLE_VERSION=test
 source "$1"
 [[ $VIRTUAL_ENV_DISABLE_PROMPT == 1 && $CONDA_CHANGEPS1 == false ]] || exit 10
+[[ $HF_PROMPT_GAP_EXTERNAL == 1 && $bleopt_prompt_ruler == empty-line ]] || exit 17
 _hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == '' ]] || exit 11
-_hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == '' ]] || exit 17
-HF_PROMPT_TRANSIENT=1
 _hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == same-dir:trim ]] || exit 12
 VIRTUAL_ENV=/work/new/.venv
 _hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == '' ]] || exit 13
