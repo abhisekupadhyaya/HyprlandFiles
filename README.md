@@ -70,7 +70,7 @@ configuration directories are never replaced. Keep personal Lua additions in
 - Explicit **Lock**, **Log out**, **Server mode**, **Restart** and **Shut down**
   actions. Destructive session/power actions ask for confirmation.
 
-For the optional shared Bash prompt, history suggestions and opaque black/blue
+For the optional shared Bash ribbon prompt, history suggestions and frosted black/blue
 Ghostty and VS Code style, run `python3 tools/terminal_setup.py apply` as your
 desktop user. See [shared Bash terminal style](docs/bash-terminal.md) for Remote
 SSH fonts, retained inputs and rollback.

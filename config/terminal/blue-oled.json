@@ -9,6 +9,18 @@
   "border": "#16243B",
   "surface": "#050B14",
   "font": "JetBrainsMono Nerd Font Mono",
+  "ribbon_cyan": "#7DD3FC",
+  "ribbon_blue": "#2457C5",
+  "ribbon_navy": "#17375E",
+  "ink": "#031018",
+  "glass": {
+    "opacity": 0.8,
+    "blur_size": 7,
+    "blur_passes": 3,
+    "noise": 0.02,
+    "vibrancy": 0.17,
+    "vscode_opacity": 80
+  },
   "ansi": [
     "#000000", "#FF7B86", "#8BD5A0", "#EBCB8B",
     "#6EA8FE", "#B8A1E3", "#7DD3FC", "#D6E2F0",

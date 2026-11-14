@@ -2,6 +2,10 @@
 
 ## 0.1.0-rc.3 — 2026-11-13
 
+- Match the reference's two-row ribbon prompt with Bash, RAM, duration, clock,
+  path and Git labels. Add black-tinted Ghostty glass and stronger Hyprland blur;
+  preserve existing typography with `--style-only`. Export VS Code's native
+  glass settings for the separate client application.
 - Add an opt-in shared Bash prompt, history suggestions and opaque black/blue
   styling for Ghostty and local/Remote SSH VS Code. Preserve JSONC, unrelated
   shell settings and existing permissions; retain exact add-on input hashes.

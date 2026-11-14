@@ -4,7 +4,7 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 137,
+    "passed": 141,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
@@ -86,6 +86,15 @@
     "inputs": 3,
     "installed_on_existing_host": true,
     "terminal_background": "#000000",
+    "terminal_opacity": 0.8,
+    "prompt_style": "Two rows of opaque cyan, cobalt and navy ribbons",
+    "hyprland_blur": {
+      "size": 7,
+      "passes": 3,
+      "live_configuration_readback_verified": true
+    },
+    "existing_typography_preserved": true,
+    "remote_client_glass_settings": "Owner reports added to local User Settings; rendered effect not independently confirmed",
     "bash": "5.3.9",
     "native_ghostty_and_vscode_hooks": true,
     "history_suggestion_acceptance": "PASS through Ghostty and VS Code startup scripts and with tmux terminal type",
