@@ -2,6 +2,9 @@
 
 ## 0.1.0-rc.3 — 2026-11-13
 
+- Coordinate Yazi and Superfile with the black/blue terminal glass: transparent
+  base panels, blue borders and navy selections. Retain rich file icons, syntax,
+  gradients and semantic colours, and merge only appearance settings with backups.
 - Use compact project/Git ribbons above a fixed input marker, with conditional
   environment badges, failures and slow-command timings. Collapse repeated
   headers in scrollback while retaining directory/environment boundaries. Keep

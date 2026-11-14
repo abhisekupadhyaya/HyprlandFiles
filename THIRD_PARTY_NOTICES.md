@@ -59,6 +59,14 @@ package-provided upstream notices.
 - https://github.com/tmux/tmux
 - https://github.com/aristocratos/btop
 
+The optional file-manager appearance setup retains Superfile v1.6.0's default
+configuration and Catppuccin Mocha theme as fresh-install fallback data. Existing
+themes supply their own syntax/semantic palette when adapted. Source comments
+and attribution are preserved; the Superfile MIT notice is included at
+[LICENSES/superfile.txt](LICENSES/superfile.txt) and copied to the user's data tree.
+Yazi's appearance uses small original overrides; its full icon/file-type tables
+remain supplied by the installed program.
+
 The opt-in shared Bash appearance add-on pins Oh My Posh (MIT), JetBrains Mono
 Nerd Font (OFL-1.1) and ble.sh (BSD-3-Clause) in `locks/terminal-amd64.json`.
 The Oh My Posh notice is retained in `LICENSES/oh-my-posh.txt`; font and ble.sh
