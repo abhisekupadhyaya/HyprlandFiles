@@ -27,7 +27,7 @@ Extended tests exercise real pywal16 palette generation and cross-component
 outputs; Unix socket readiness uses a private temporary socket.
 
 Current automated results are recorded in
-[release-preparation.json](release-preparation.json): 146 tests pass, including
+[release-preparation.json](release-preparation.json): 149 tests pass, including
 real locked-wheel palette generation, the Server mode menu command, local greetd
 entrypoint checks, terminal payload rollback, offline Cargo staging, archive
 validation and vendor reproducibility. Appearance tests use a private schema and
@@ -100,6 +100,18 @@ application-scoped VS Code glass controls to the separate client's local User
 Settings; Remote SSH cannot apply those controls. Actual GUI appearance of the
 new frosted style remains unconfirmed. A local preview renders real prompt output
 with the existing font; its frosted backdrop is illustrative, not a live screenshot.
+
+The same add-on now styles Yazi 26.9.1 and Superfile 1.6.0. Isolated native PTY
+runs load the adapted configurations, render a Python/file fixture and exit
+cleanly. Captured output retains RGB and semantic colours without the old
+opaque Superfile Catppuccin base background. The native transparency setting
+leaves selections distinct while exposing the existing terminal glass. TOML
+preservation checks cover file-type/icon rules, custom syntax and semantic
+colours, editor/opening commands, comments, private modes and symlink refusal.
+Application on the existing host changes only the two app themes, Superfile's
+theme/transparency keys and the added MIT notice; reapplication makes no changes.
+Actual GUI blur still depends on the displaying terminal/compositor and is not
+claimed verified by these PTY runs.
 
 **Release gates still open:** actual clean Ubuntu Server install through APT,
 manual boot/TTY/authentication/lifecycle tests of this portable layout, broader

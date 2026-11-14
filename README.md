@@ -59,6 +59,9 @@ configuration directories are never replaced. Keep personal Lua additions in
 - Yazi, Superfile, Wiremix and Bluetui handle files, audio and Bluetooth in
   Ghostty or over SSH. tmux retains remote shells, commands and pane layouts
   across SSH disconnections; btop provides system monitoring.
+- The optional [terminal appearance add-on](docs/bash-terminal.md) gives Yazi
+  and Superfile transparent backgrounds and blue UI accents while retaining
+  their rich file icons, syntax and status colours.
 - A dark system appearance by default (GTK and standard app portal), with
   fresh VS Code preferences following the OS. Existing VS Code customization is preserved.
 - The included original blue artwork; change it with **Super+Alt+W** or

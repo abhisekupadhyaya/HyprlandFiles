@@ -4,7 +4,7 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 146,
+    "passed": 149,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
@@ -103,6 +103,13 @@
     "native_ghostty_and_vscode_hooks": true,
     "history_suggestion_acceptance": "PASS through Ghostty and VS Code startup scripts and with tmux terminal type",
     "idempotent_reapplication": true,
+    "file_manager_style": {
+      "yazi": "Minimal blue UI overrides; inherited file-type/icon/syntax colours",
+      "superfile": "Native transparent background, blue UI and navy selections; existing syntax/semantic/gradient palette preserved",
+      "native_isolated_ptys": "PASS: Yazi 26.9.1 and Superfile 1.6.0 render fixtures and exit cleanly",
+      "installed_and_idempotent": true,
+      "actual_gui_blur_confirmed": false
+    },
     "physical_gui_appearance_confirmed": false,
     "remote_client_font_installation_confirmed": false,
     "base_recovery_kit_includes_addon_inputs": false

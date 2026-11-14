@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Opt-in user-level Bash, Ghostty and VS Code styling with exact inputs/backups."""
+"""User-level Bash, Ghostty, VS Code and file-manager styling with backups."""
 import argparse
 import fcntl
 import json
@@ -12,6 +12,7 @@ import tarfile
 
 from hflib import Transaction, checked_download, managed_state, operation, no_symlink_parents
 from jsonc import merge as merge_jsonc
+from file_manager_style import configuration_operations as file_manager_operations
 
 ROOT=Path(__file__).resolve().parents[1]
 BEGIN='# >>> HyprlandFiles shared Bash style >>>'
@@ -251,6 +252,7 @@ def configuration_operations(root,home,preserve_typography=False):
         ops.append(operation(target,merge_jsonc(original,updates),target.stat().st_mode&0o777 if target.exists() else 0o644))
     ops.append(operation(home/'.local/share/hyprlandfiles/licenses/oh-my-posh.txt',
                          (root/'LICENSES/oh-my-posh.txt').read_bytes()))
+    ops.extend(file_manager_operations(root,home,p))
     return ops
 
 
@@ -274,6 +276,7 @@ def apply(root,home,cache,style_only=False):
     subprocess.run(['ghostty','+validate-config','--config-file='+str(home/'.config/ghostty/config.ghostty')],check=True)
     print('Shared Bash ribbon prompt and black/blue frosted-glass styling installed.')
     print('Open a new Ghostty or VS Code terminal. Current sessions and workloads were preserved.')
+    print('Yazi and Superfile use the shared blue glass style. Reopen yazi/spf to load their themes.')
     if (home/'.vscode-server').is_dir():
         print('Remote SSH prompt/colours are configured. VS Code glass controls are client application settings; see the exported vscode-glass.settings.json.')
     return backup

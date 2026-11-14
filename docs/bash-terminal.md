@@ -59,6 +59,26 @@ supported platforms; under Hyprland, the compositor supplies the blur.
 For an already running Hyprland session, apply the include with
 `hyprctl reload config-only`; this does not restart the compositor.
 
+Yazi and Superfile also follow this appearance add-on. Yazi keeps its built-in
+file-type rules, colourful icons, copy/cut/selection markers and syntax themes;
+only its paths, borders, tabs and hover backgrounds get blue accents. The hover
+style leaves foreground colours inherited. Its base background stays at the
+terminal default so the existing glass shows through.
+
+Superfile uses native `transparent_background = true` and a separate
+`hyprland-blue-glass` theme, adapted from the currently selected theme. Main
+panels use the terminal background, active borders/path labels are blue/cyan,
+and navy selections stay opaque for readability. Syntax highlighting, icon
+colours, gradients, success/error colours and confirmation buttons are retained.
+An existing theme is not overwritten. Config comments, editor/opening commands,
+sorting, layout, hotkeys and private file modes are preserved. Fresh defaults
+come from the retained Superfile 1.6.0 configuration, with its MIT notice.
+
+Close and reopen `yazi` or `spf` to load the changes. The apps use the terminal's
+existing opacity and compositor blur; no shader, plugin or extra process is
+added. Over SSH, blur still comes from the terminal/compositor displaying the
+window. VS Code keeps its black terminal canvas and native frosted overlays.
+
 VS Code keeps black editor/terminal/panel surfaces with blue accents. Its native
 Modern UI glass controls enable frosted menus and overlays in supported desktop
 versions. These are application-scoped settings: Remote SSH cannot configure
