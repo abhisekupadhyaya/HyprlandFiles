@@ -27,13 +27,14 @@ Extended tests exercise real pywal16 palette generation and cross-component
 outputs; Unix socket readiness uses a private temporary socket.
 
 Current automated results are recorded in
-[release-preparation.json](release-preparation.json): 116 tests pass, including
+[release-preparation.json](release-preparation.json): 118 tests pass, including
 real locked-wheel palette generation, the Server mode menu command, local greetd
 entrypoint checks, terminal payload rollback, offline Cargo staging, archive
 validation and vendor reproducibility. Appearance tests use a private schema and
 Gio memory backend; no installed desktop preferences are changed. The real
 219-crate Wiremix vendor archive was rebuilt without network access and produced
-the exact locked SHA256. Actual Wiremix compilation is not claimed complete.
+the exact locked SHA256. Wiremix also completed its real offline release build
+on the installation host, and the installed binary reports version 0.11.0.
 
 Two patched greeter builds were identical and matched the Git recovery manifest.
 All 36 real retained inputs verify, including .deb package identities. Six old
@@ -41,13 +42,21 @@ PPA pool URLs returned 404; the original Launchpad build files matched the exist
 hashes and their reviewed build URLs are now retained. Source-only installs can
 use these exact archives when APT no longer lists a pinned version.
 
-Native Lua/Fuzzel and controller parser results from rc.2 are historical evidence;
-they are not validation of this changed candidate. Hyprland, Fuzzel and Ghostty
-native binaries are unavailable in this preparation environment, so rc.3 native
-checks remain open. PRs #2 and #3 had passing GitHub runs and are merged. The
+Native Hyprland, Fuzzel and Ghostty checks now pass for both profiles using
+private rendered configurations and runtime directories. The installed user's
+Lua configuration also passes. This validates parsing, not physical login or
+display behavior. PRs #2 and #3 had passing GitHub runs and are merged. The
 terminal-first feature run did not start because GitHub reported an account
 billing lock; no passing rc.3 CI run is claimed. Login/installer changes still
 require independent human review.
+
+The host's first user phase stopped on immediate appearance readback after both
+preferences had been saved. Verification now processes pending backend
+notifications with a bounded wait and still rejects a permanent mismatch. Both
+installed preferences read back correctly. System and user payloads are installed;
+final next-boot controller enablement is a separate step. Doctor also reports an
+existing network-wait failure from before installation; it was not reset or
+changed to manufacture a passing result.
 
 **Release gates still open:** actual clean Ubuntu Server install through APT,
 manual boot/TTY/authentication/lifecycle tests of this portable layout, broader

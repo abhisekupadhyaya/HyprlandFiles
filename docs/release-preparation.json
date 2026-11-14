@@ -4,14 +4,14 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 116,
+    "passed": 118,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
   "native_parsers": {
-    "Hyprland 0.57.0": "Not rerun for rc.3; native binaries unavailable in the preparation environment",
-    "Fuzzel": "Not rerun for rc.3; native binaries unavailable in the preparation environment",
-    "Ghostty": "Not rerun for rc.3; native binaries unavailable in the preparation environment"
+    "Hyprland 0.57.0": "PASS for desktop auto scale and laptop-server scale 2 in private configuration/runtime directories",
+    "Fuzzel": "PASS for desktop auto scale and laptop-server scale 2 in private configuration/runtime directories",
+    "Ghostty": "PASS for desktop auto scale and laptop-server scale 2 in private configuration/runtime directories"
   },
   "greeter_build": {
     "version": "0.4.2-1+hf1",
@@ -26,8 +26,6 @@
   "public_source_audit": "no credential patterns or original private machine identifiers found; local state and caches excluded",
   "not_verified": [
     "Fresh Ubuntu Server installation of this candidate through APT and retained kit",
-    "Native Hyprland, Fuzzel and Ghostty validation for rc.3",
-    "Real Wiremix compilation with the retained vendor archive and Ubuntu compiler dependencies",
     "Physical authentication, TTY, lid/reboot, tmux SSH persistence and complete session acceptance",
     "Broader GPU, external monitor and sustained thermal/battery validation",
     "Independent human review of the login/installer changes",
@@ -60,11 +58,28 @@
     "user_preferences": "prefer-dark; GTK Adwaita-dark",
     "portal_readback": "Prior rc.2 observation only; not rerun for rc.3",
     "vscode_default": "OS detection; installed dark theme ID chosen from package metadata when available",
-    "native_settings_validation": "Gio memory-backend tests with a private test schema; no live preferences changed",
+    "native_settings_validation": "Private-schema memory backend and notification regression tests pass; installed user values read back correctly",
     "fresh_vm_validation": false
   },
   "review": {
     "independent_human_review": false,
     "release_gate": "Root/login changes require maintainer review before merge/release"
-  }
+  },
+  "wiremix_build": {
+    "version": "0.11.0",
+    "offline_vendor_build": true,
+    "release_build_completed": true,
+    "installed_binary_version_verified": true
+  },
+  "installed_host": {
+    "system_stage_completed": true,
+    "user_payload_installed": true,
+    "appearance_effective_and_user_values_verified": true,
+    "controller_enablement_pending": true,
+    "physical_acceptance_completed": false,
+    "clean_machine_test": false
+  },
+  "existing_host_failures": [
+    "systemd-networkd-wait-online.service failed before installation; not reset or changed"
+  ]
 }

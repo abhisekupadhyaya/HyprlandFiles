@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 from hflib import Transaction, atomic, operation, no_symlink_parents
 
 SCHEMA='org.gnome.desktop.interface'
@@ -72,6 +73,21 @@ def user_values(settings):
     return {key:(value.print_(True) if (value:=settings.get_user_value(key)) is not None else None) for key in DESIRED}
 
 
+def verify_preferences(settings, desired, timeout=3):
+    """Flush writes and process backend notifications before checking readback."""
+    from gi.repository import Gio,GLib
+    Gio.Settings.sync()
+    context=GLib.MainContext.default();deadline=time.monotonic()+timeout
+    while True:
+        while context.pending() and time.monotonic()<deadline:
+            context.iteration(False)
+        if user_values(settings)==desired:
+            return
+        if time.monotonic()>=deadline:
+            raise RuntimeError('Appearance preference readback did not match after waiting for backend notifications')
+        time.sleep(.01)
+
+
 def apply_preferences(home, files_backup=None):
     from gi.repository import Gio
     home=Path(home);settings=settings_backend();before=user_values(settings)
@@ -87,8 +103,7 @@ def apply_preferences(home, files_backup=None):
     print('Appearance rollback: python3 tools/appearance.py rollback '+str(snapshot),flush=True)
     for key,value in DESIRED.items():
         if not settings.set_string(key,value):raise RuntimeError('Could not set appearance preference: '+key)
-    Gio.Settings.sync()
-    if user_values(settings)!=desired:raise RuntimeError('Appearance preference readback did not match')
+    verify_preferences(settings,desired)
     return snapshot
 
 
