@@ -27,7 +27,7 @@ Extended tests exercise real pywal16 palette generation and cross-component
 outputs; Unix socket readiness uses a private temporary socket.
 
 Current automated results are recorded in
-[release-preparation.json](release-preparation.json): 119 tests pass, including
+[release-preparation.json](release-preparation.json): 129 tests pass, including
 real locked-wheel palette generation, the Server mode menu command, local greetd
 entrypoint checks, terminal payload rollback, offline Cargo staging, archive
 validation and vendor reproducibility. Appearance tests use a private schema and
@@ -54,16 +54,25 @@ The host's first user phase stopped on immediate appearance readback after both
 preferences had been saved. Verification now processes pending backend
 notifications with a bounded wait and still rejects a permanent mismatch. Both
 installed preferences read back correctly. System and user payloads are installed;
-final next-boot controller enablement is a separate step. Doctor also reports an
+the controller was enabled and the owner rebooted. Doctor also reports an
 existing network-wait failure from before installation; it was not reset or
 changed to manufacture a passing result.
+
+The first post-install login reached Hyprland without activating its helper
+target. Activating the target restored the wallpaper and bar, confirmed by the
+owner. Startup now explicitly imports the authenticated compositor environment
+and activates the graphical target; shutdown and supervisor cleanup stop it.
+Menu applications and logout use independent scopes. A disposable live systemd
+test confirmed that the application scope survives stopping its launching
+service, without running desktop actions. Fresh login and complete Server mode
+acceptance with this repair still require physical verification.
 
 **Release gates still open:** actual clean Ubuntu Server install through APT,
 manual boot/TTY/authentication/lifecycle tests of this portable layout, broader
 GPU/desktop/VM testing, and off-machine retention/public distribution of the prepared
-recovery archive. No root install, logout or reboot of the developer's running desktop is
-performed while preparing this repository. Do not relabel this RC production-
-validated until those gates have evidence.
+recovery archive. The existing-host installation and owner-driven reboot do not
+substitute for these gates. Do not relabel this RC production-validated until
+those gates have evidence.
 
 
 Automatic default profile selection and the Git-anchored kit remain supported.

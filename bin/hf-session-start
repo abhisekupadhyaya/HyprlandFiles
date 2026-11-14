@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+"""Start graphical helpers only from an authenticated local Hyprland session."""
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+ENVIRONMENT=('WAYLAND_DISPLAY','DISPLAY','HYPRLAND_INSTANCE_SIGNATURE',
+             'XDG_CURRENT_DESKTOP','XDG_SESSION_DESKTOP','XDG_SESSION_TYPE','XDG_SESSION_ID')
+
+
+def start(environment=None):
+    env=dict(os.environ if environment is None else environment)
+    sid=env.get('XDG_SESSION_ID','')
+    if not sid:raise RuntimeError('No authenticated graphical session')
+    result=subprocess.check_output(['loginctl','show-session',sid,'-p','User','-p','Seat',
+        '-p','Remote','-p','Class','-p','Service','-p','State'],text=True)
+    props=dict(line.split('=',1) for line in result.splitlines() if '=' in line)
+    expected=dict(User=str(os.getuid()),Seat='seat0',Remote='no',Class='user',Service='greetd')
+    if any(props.get(key)!=value for key,value in expected.items()) or props.get('State') not in ('active','online'):
+        raise RuntimeError('Graphical helpers require the local authenticated greetd session')
+    runtime=Path(env.get('XDG_RUNTIME_DIR','/run/user/'+str(os.getuid())))
+    display=env.get('WAYLAND_DISPLAY','')
+    if (runtime.stat().st_uid!=os.getuid() or not display or Path(display).name!=display
+            or not (runtime/display).is_socket() or not env.get('HYPRLAND_INSTANCE_SIGNATURE')):
+        raise RuntimeError('The authenticated compositor is not ready')
+    env.update(XDG_RUNTIME_DIR=str(runtime),DBUS_SESSION_BUS_ADDRESS='unix:path='+str(runtime/'bus'),
+               XDG_CURRENT_DESKTOP='Hyprland',XDG_SESSION_DESKTOP='Hyprland',XDG_SESSION_TYPE='wayland')
+    keys=[key for key in ENVIRONMENT if env.get(key)]
+    subprocess.run(['dbus-update-activation-environment','--systemd',*keys],env=env,check=True)
+    subprocess.run(['systemctl','--user','start','hf-session.target','waybar.service',
+                    'hyprpaper.service','swaync.service','hypridle.service'],env=env,check=True)
+    return 0
+
+
+if __name__=='__main__':
+    try:sys.exit(start())
+    except (OSError,RuntimeError,subprocess.SubprocessError) as error:sys.exit(str(error))

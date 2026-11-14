@@ -1,8 +1,8 @@
 # Login and server lifecycle
 
 The existing maintained components do the work: greetd/PAM/logind authenticate,
-labwc hosts the nwg-hello login frontend, start-hyprland manages the desktop's
-native systemd lifecycle, and hyprlock supplies ext-session-lock. The small
+labwc hosts the nwg-hello login frontend, start-hyprland watches the compositor,
+and hyprlock supplies ext-session-lock. The small
 controller coordinates lid state and greetd availability; it never authenticates
 users or starts Hyprland itself. No autologin or SSH shell hook exists.
 
@@ -30,17 +30,28 @@ the compositor lock remains engaged if recovery fails. Opening without reboot
 turns the display on, then requires authentication to the same session. Closing
 a desktop keeps its applications/RAM; it is different from clean headless boot.
 
+Once the compositor is ready, `hf-session-start` verifies its authenticated
+local greetd session and imports its Wayland environment into the user manager.
+It then starts `hf-session.target`, which binds the packaged graphical-session
+target and its bar, wallpaper, idle, notification and audio services. This target
+is never enabled at default login; a plain SSH login does not start desktop audio.
+
 On normal desktop shutdown, a synchronous native Hyprland Lua shutdown event
-stops only the known graphical helper units before Wayland disappears. PipeWire
-units are bound to the graphical-session target. Native user targets stop them
-at logout; a plain SSH login does not activate desktop audio. No failure reset,
-force-app-kill or success-exit-code masking is used.
+stops the graphical targets and known helper units before Wayland disappears.
+The session supervisor repeats cleanup after the compositor exits, including
+after a crash, while still holding the lifetime guard. Cleanup clears the stale
+compositor environment. No failure reset, force-app-kill or success-exit-code
+masking is used. Native parser checks use a private runtime and D-Bus session.
 
 `hf-desktop status` inspects; `hf-desktop off` from inside the desktop requests
 normal graceful logout and suppresses the login; `hf-desktop on` from TTY/SSH
 shows login. Server mode requires saved work because it closes apps. A true
 close/open cycle clears manual suppression only in the laptop profile. Desktop
 profile users restore login with `hf-desktop on`.
+
+Menu applications and the graceful logout client run in separate user scopes.
+Stopping Waybar during shutdown therefore cannot kill the logout client or
+applications launched through the bar. Scopes have no startup enablement.
 
 The laptop profile writes a separate logind lid-ignore drop-in. It does not
 change other sleep policy, boot target, SSH, network or firewall. On battery the

@@ -2,6 +2,11 @@
 
 ## 0.1.0-rc.3 — 2026-11-13
 
+- Activate desktop helper services from the ready authenticated compositor;
+  clean up graphical targets and environment on logout or compositor exit.
+- Run menu applications and graceful logout in independent user scopes so
+  stopping Waybar cannot interrupt logout or kill launched terminals.
+- Isolate native configuration probes from the installed desktop's user bus.
 - Remove PipeWire filter-chain default-target activation so a closed-lid boot
   cannot start desktop audio through its dependency on PipeWire.
 - Wait for GSettings backend notifications before appearance readback, while

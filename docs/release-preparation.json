@@ -4,7 +4,7 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 119,
+    "passed": 129,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
@@ -75,7 +75,7 @@
     "system_stage_completed": true,
     "user_payload_installed": true,
     "appearance_effective_and_user_values_verified": true,
-    "controller_enablement_pending": true,
+    "controller_enablement_pending": false,
     "physical_acceptance_completed": false,
     "clean_machine_test": false
   },

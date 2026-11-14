@@ -7,6 +7,16 @@ ROOT=Path(__file__).resolve().parents[1]
 USER_BIN=Path.home()/'.local/bin'
 
 
+def scoped(command):
+    # Waybar stops during logout. Its process group must not own applications
+    # or the logout client that is still waiting for the compositor to exit.
+    return ['systemd-run','--user','--scope','--collect','--quiet','--',*map(str,command)]
+
+
+def launch(command):
+    return subprocess.Popen(scoped(command))
+
+
 def terminal(*command, title=None):
     argv=['ghostty']
     if title:
@@ -29,23 +39,23 @@ def main():
                 'Notifications':['swaync-client','-t']}
         nested={'Wallpaper and colours':'wallpaper','Network status':'network','Shortcuts and recovery':'help','Session and power':'power',
                 'Audio controls':'audio','Bluetooth':'bluetooth'}
-        if choice in direct:subprocess.Popen(direct[choice])
-        elif choice in nested:subprocess.Popen([str(ROOT/'bin/hf-menu'),nested[choice]])
+        if choice in direct:launch(direct[choice])
+        elif choice in nested:launch([str(ROOT/'bin/hf-menu'),nested[choice]])
     elif mode=='audio':
-        subprocess.Popen(terminal(USER_BIN/'wiremix', title='Audio'))
+        launch(terminal(USER_BIN/'wiremix', title='Audio'))
     elif mode=='bluetooth':
-        subprocess.Popen(terminal(USER_BIN/'bluetui', title='Bluetooth'))
+        launch(terminal(USER_BIN/'bluetui', title='Bluetooth'))
     elif mode=='help':
-        subprocess.Popen(terminal('less', ROOT/'docs/keybindings.txt', title='HyprlandFiles guide'))
+        launch(terminal('less', ROOT/'docs/keybindings.txt', title='HyprlandFiles guide'))
     elif mode=='power':
         choice=choose('Session', ['Lock — keep applications running','Log out — return to login','Server mode — log out and hide login','Restart — ends applications and server workloads','Shut down — ends applications and server workloads'])
         if choice.startswith('Lock'):
-            subprocess.Popen(['/usr/local/bin/hf-lock']);return
+            launch(['/usr/local/bin/hf-lock']);return
         if not choice:return
         prompt='Restore login: hf-desktop on (TTY/SSH)' if choice.startswith('Server mode') else 'Save your work first'
         confirm=choose(prompt, ['Cancel', 'Confirm: '+choice])
         if not confirm.startswith('Confirm: '):return
-        if choice.startswith('Log out'): subprocess.run(['hyprshutdown'],check=True)
+        if choice.startswith('Log out'): subprocess.run(scoped(['hyprshutdown','--no-fork']),check=True)
         elif choice.startswith('Server mode'): subprocess.run([str(ROOT/'bin/hf-desktop'),'off'],check=True)
         elif choice.startswith('Restart'): subprocess.run(['systemctl','reboot'],check=True)
         elif choice.startswith('Shut down'): subprocess.run(['systemctl','poweroff'],check=True)
@@ -59,9 +69,9 @@ def main():
         choice=choose('Brightness',['20%','40%','60%','80%','100%'])
         if choice:subprocess.run([str(ROOT/'bin/hf-control'),'brightness',choice.rstrip('%')],check=True)
     elif mode=='network':
-        subprocess.Popen(terminal('sh','-c','networkctl status --no-pager; printf "\nPress Enter to close.\n"; read answer',title='HyprlandFiles network status'))
+        launch(terminal('sh','-c','networkctl status --no-pager; printf "\nPress Enter to close.\n"; read answer',title='HyprlandFiles network status'))
     elif mode=='battery':
-        subprocess.Popen(terminal('sh','-c','upower --dump; printf "\nPress Enter to close.\n"; read answer',title='HyprlandFiles battery status'))
+        launch(terminal('sh','-c','upower --dump; printf "\nPress Enter to close.\n"; read answer',title='HyprlandFiles battery status'))
 
 if __name__=='__main__':
     try:main()

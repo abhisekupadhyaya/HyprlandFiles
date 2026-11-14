@@ -95,7 +95,7 @@ def render(text, home, opts):
 
 def user_operations(root, home, opts, generation=None):
     operations=[]
-    for folder in ('hypr','waybar','ghostty','fuzzel','swaync','xdg-desktop-portal'):
+    for folder in ('hypr','waybar','ghostty','fuzzel','swaync','xdg-desktop-portal','systemd/user'):
         for source in sorted((root/'config'/folder).rglob('*')):
             if source.is_file():
                 relative=source.relative_to(root/'config')
@@ -362,8 +362,8 @@ def enable():
 
 def doctor():
     failures=[]
-    def check(label,argv):
-        p=subprocess.run(argv,text=True,capture_output=True)
+    def check(label,argv,env=None):
+        p=subprocess.run(argv,text=True,capture_output=True,env=env)
         good=p.returncode==0
         print(('PASS ' if good else 'FAIL ')+label)
         if not good: failures.append(label)
@@ -379,7 +379,11 @@ def doctor():
         args=['systemctl',*(['--user'] if user else []),'--failed','--no-legend','--plain','--no-pager']
         p=check(('user' if user else 'system')+' failure query',args)
         if p.stdout.strip(): print('FAIL failed units exist; inspect with systemctl --failed');failures.append('failed units')
-    p=check('Lua parser',['Hyprland','--verify-config','-c',str(Path.home()/'.config/hypr/hyprland.lua')])
+    with tempfile.TemporaryDirectory(prefix='hf-doctor-runtime-') as runtime:
+        env=dict(os.environ,XDG_RUNTIME_DIR=runtime)
+        for key in ('HYPRLAND_INSTANCE_SIGNATURE','WAYLAND_DISPLAY','DISPLAY','XDG_SESSION_ID'):
+            env.pop(key,None)
+        p=check('Lua parser',['dbus-run-session','--','Hyprland','--verify-config','-c',str(Path.home()/'.config/hypr/hyprland.lua')],env=env)
     if os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
         p=check('live compositor',['hyprctl','configerrors'])
         if p.stdout.strip(): failures.append('live config errors')

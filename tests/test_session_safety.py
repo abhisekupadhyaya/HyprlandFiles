@@ -2,6 +2,11 @@ import fcntl
 import importlib.machinery
 import importlib.util
 import os
+import io
+import contextlib
+import runpy
+import signal
+import socket
 from pathlib import Path
 import sys
 import tempfile
@@ -90,6 +95,18 @@ session_module=importlib.util.module_from_spec(session_spec);session_loader.exec
 
 
 class SessionGuard(unittest.TestCase):
+    def test_session_cleanup_finishes_before_lifetime_guard_is_released(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'guard';path.touch();calls=[]
+            def cleanup():
+                with path.open('rb') as check:
+                    with self.assertRaises(BlockingIOError):fcntl.flock(check,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                calls.append('cleaned')
+            result=session_module.run_session(path,tmp,dict(os.environ),
+                [sys.executable,'-c','raise SystemExit(7)'],cleanup=cleanup)
+            self.assertEqual(result,7);self.assertEqual(calls,['cleaned'])
+            with path.open('rb') as check:fcntl.flock(check,fcntl.LOCK_EX|fcntl.LOCK_NB)
+
     def test_only_local_authenticated_greetd_sessions_can_launch(self):
         props={'Remote':'no','Seat':'seat0','User':str(os.getuid()),'Class':'user','Service':'greetd'}
         with patch.dict(os.environ,{'XDG_SESSION_ID':'test','XDG_RUNTIME_DIR':'/tmp/test-runtime'}), \
@@ -133,6 +150,23 @@ menu_module=importlib.util.module_from_spec(menu_spec);menu_loader.exec_module(m
 
 
 class SessionMenu(unittest.TestCase):
+    def test_terminal_launched_from_bar_has_an_independent_scope(self):
+        with patch.object(sys,'argv',['hf-menu','main']), \
+                patch.object(menu_module,'choose',return_value='Terminal'), \
+                patch.object(menu_module.subprocess,'Popen') as launch:
+            menu_module.main()
+        self.assertEqual(launch.call_args.args[0],
+            ['systemd-run','--user','--scope','--collect','--quiet','--','ghostty'])
+
+    def test_confirmed_logout_survives_stopping_the_bar(self):
+        choice='Log out — return to login'
+        with patch.object(sys,'argv',['hf-menu','power']), \
+                patch.object(menu_module,'choose',side_effect=[choice,'Confirm: '+choice]), \
+                patch.object(menu_module.subprocess,'run') as run:
+            menu_module.main()
+        self.assertEqual(run.call_args.args[0],
+            ['systemd-run','--user','--scope','--collect','--quiet','--','hyprshutdown','--no-fork'])
+
     def test_server_mode_uses_installed_command_after_confirmation(self):
         choice='Server mode — log out and hide login'
         with patch.object(sys,'argv',['hf-menu','power']), \
@@ -150,6 +184,92 @@ class SessionMenu(unittest.TestCase):
                 patch.object(menu_module.subprocess,'run') as run:
             menu_module.main()
             run.assert_not_called()
+
+
+desktop_loader=importlib.machinery.SourceFileLoader('hf_desktop',str(ROOT/'bin/hf-desktop'))
+desktop_spec=importlib.util.spec_from_loader(desktop_loader.name,desktop_loader)
+desktop_module=importlib.util.module_from_spec(desktop_spec);desktop_loader.exec_module(desktop_module)
+
+
+class ServerLogout(unittest.TestCase):
+    def test_logout_has_its_own_scope_even_when_invoked_directly(self):
+        from types import SimpleNamespace
+        with patch.dict(os.environ,{'HYPRLAND_INSTANCE_SIGNATURE':'test-instance'}), \
+                patch.object(desktop_module,'ask',return_value={'desktop_sessions':[{'id':'test'}]}) as ask, \
+                patch.object(desktop_module.subprocess,'run',return_value=SimpleNamespace(returncode=0)) as run:
+            desktop_module.off()
+        self.assertEqual([call.args[0] for call in ask.call_args_list],['status','off'])
+        self.assertEqual(run.call_args.args[0],
+            ['systemd-run','--user','--scope','--collect','--quiet','--','hyprshutdown','--no-fork'])
+
+    def test_failed_logout_restores_login_screen_policy(self):
+        from types import SimpleNamespace
+        with patch.dict(os.environ,{'HYPRLAND_INSTANCE_SIGNATURE':'test-instance'}), \
+                patch.object(desktop_module,'ask',return_value={'desktop_sessions':[{'id':'test'}]}) as ask, \
+                patch.object(desktop_module.subprocess,'run',return_value=SimpleNamespace(returncode=1)):
+            with self.assertRaises(RuntimeError):desktop_module.off()
+        self.assertEqual([call.args[0] for call in ask.call_args_list],['status','off','on'])
+
+
+start_loader=importlib.machinery.SourceFileLoader('hf_session_start',str(ROOT/'bin/hf-session-start'))
+start_spec=importlib.util.spec_from_loader(start_loader.name,start_loader)
+start_module=importlib.util.module_from_spec(start_spec);start_loader.exec_module(start_module)
+
+
+class GraphicalStartup(unittest.TestCase):
+    def setUp(self):
+        tmp=tempfile.TemporaryDirectory();self.addCleanup(tmp.cleanup)
+        self.runtime=Path(tmp.name)
+        sock=socket.socket(socket.AF_UNIX);self.addCleanup(sock.close)
+        sock.bind(str(self.runtime/'wayland-test'))
+        self.env=dict(XDG_SESSION_ID='test-session',XDG_RUNTIME_DIR=str(self.runtime),
+            WAYLAND_DISPLAY='wayland-test',HYPRLAND_INSTANCE_SIGNATURE='test-instance',
+            DBUS_SESSION_BUS_ADDRESS='unix:path=/wrong-greeter-bus')
+        self.props='User='+str(os.getuid())+'\nSeat=seat0\nRemote=no\nClass=user\nService=greetd\nState=active\n'
+
+    def test_compositor_environment_is_imported_before_session_target_starts(self):
+        with patch.object(start_module.subprocess,'check_output',return_value=self.props), \
+                patch.object(start_module.subprocess,'run') as run:
+            self.assertEqual(start_module.start(self.env),0)
+        first,second=run.call_args_list
+        self.assertEqual(first.args[0][:2],['dbus-update-activation-environment','--systemd'])
+        self.assertIn('WAYLAND_DISPLAY',first.args[0])
+        self.assertIn('HYPRLAND_INSTANCE_SIGNATURE',first.args[0])
+        self.assertEqual(first.kwargs['env']['DBUS_SESSION_BUS_ADDRESS'],'unix:path='+str(self.runtime/'bus'))
+        self.assertEqual(second.args[0],['systemctl','--user','start','hf-session.target',
+            'waybar.service','hyprpaper.service','swaync.service','hypridle.service'])
+
+    def test_ssh_login_cannot_activate_graphical_helpers(self):
+        with patch.object(start_module.subprocess,'check_output',return_value=self.props.replace('Remote=no','Remote=yes')), \
+                patch.object(start_module.subprocess,'run') as run:
+            with self.assertRaises(RuntimeError):start_module.start(self.env)
+            run.assert_not_called()
+
+    def test_missing_compositor_refuses_activation(self):
+        self.env['WAYLAND_DISPLAY']='missing-socket'
+        with patch.object(start_module.subprocess,'check_output',return_value=self.props), \
+                patch.object(start_module.subprocess,'run') as run:
+            with self.assertRaises(RuntimeError):start_module.start(self.env)
+            run.assert_not_called()
+
+    def test_closing_session_cannot_restart_graphical_helpers(self):
+        with patch.object(start_module.subprocess,'check_output',return_value=self.props.replace('State=active','State=closing')), \
+                patch.object(start_module.subprocess,'run') as run:
+            with self.assertRaises(RuntimeError):start_module.start(self.env)
+            run.assert_not_called()
+
+    def test_shutdown_stops_session_targets_and_clears_compositor_environment(self):
+        from types import SimpleNamespace
+        with patch.object(sys,'argv',['hf-session-stop']), \
+                patch.object(signal,'signal'), \
+                patch('subprocess.run',return_value=SimpleNamespace(returncode=0,stderr='')) as run, \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            with self.assertRaises(SystemExit) as stopped:runpy.run_path(str(ROOT/'bin/hf-session-stop'),run_name='__main__')
+        self.assertEqual(stopped.exception.code,0);self.assertEqual(output.getvalue(),'OK\n')
+        self.assertIn('hf-session.target',run.call_args_list[0].args[0])
+        self.assertIn('graphical-session.target',run.call_args_list[0].args[0])
+        self.assertEqual(run.call_args_list[1].args[0][:3],['systemctl','--user','unset-environment'])
+        self.assertIn('WAYLAND_DISPLAY=',run.call_args_list[2].args[0])
 
 
 if __name__=='__main__':unittest.main()
