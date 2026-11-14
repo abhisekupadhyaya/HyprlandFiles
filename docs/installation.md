@@ -92,6 +92,26 @@ to the login/desktop. Server services are not dependencies of the controller.
 Run doctor and the full physical checklist before freezing additional tools.
 
 
+## Terminal-first applications
+
+Super+Return opens Ghostty and Super+E opens Yazi. The Apps menu includes
+Superfile, Wiremix and Bluetui. You can run the same terminal programs over SSH.
+Yazi uses FFmpeg, Poppler and 7-Zip for video thumbnails, PDF previews and
+archives. Full video playback requires a separate player. Superfile 1.6 uses the
+mouse wheel for scrolling. Use Yazi for click and scroll navigation in a
+terminal with mouse reporting enabled.
+
+Wiremix uses the existing PipeWire session. After a closed-lid boot, the audio
+backend starts when a desktop session begins. If Bluetui reports a software
+block, use `sudo rfkill unblock bluetooth`.
+
+The user stage downloads checksum-locked Yazi, Superfile and Bluetui releases,
+then builds Wiremix as the desktop account using its upstream Cargo lockfile.
+The recovery kit covers the locked desktop packages and wallpaper runtime.
+Installing the terminal tools also needs HTTPS access to GitHub and crates.io.
+Kitty, Foot, Thunar, Blueman, PulseAudio Volume Control, Swappy, Sunshine and
+Moonlight are excluded from the default package list.
+
 ## Default dark appearance
 
 The user phase sets org.gnome.desktop.interface color-scheme to prefer-dark and

@@ -48,6 +48,28 @@ def readable(fg, bg, ratio=4.5):
     raise ValueError("Palette cannot meet contrast requirement")
 
 
+def ghostty_palette(generation):
+    """Derive Ghostty colors from the existing cache, including older palettes."""
+    cached = json.loads((generation/'palette.json').read_text())
+    ui = cached['ui']
+    colors = cached['raw']['colors']
+    options = {
+        'background': ui['background'],
+        'foreground': ui['foreground'],
+        'cursor-color': ui['accent'],
+        'selection-background': ui['accent'],
+        'selection-foreground': ui['onaccent'],
+    }
+    content = ''.join(f'{key} = {value}\n' for key, value in options.items())
+    content += ''.join(f'palette = {i}={colors[f"color{i}"]}\n' for i in range(16))
+    target = generation/'ghostty.conf'
+    if target.is_file() and target.read_text() == content:
+        return
+    with tempfile.NamedTemporaryFile(mode='w', dir=generation, delete=False) as handle:
+        handle.write(content)
+    os.replace(handle.name, target)
+
+
 def render(raw, directory):
     cols = raw['colors']
     bg = raw['special']['background']
@@ -73,9 +95,7 @@ hl.config({{
 }})
 '''
     (directory/'hyprland.lua').write_text(lua)
-    kitty = f'background {bg}\nforeground {fg}\ncursor {accent}\nselection_background {accent}\nselection_foreground {onaccent}\n'
-    kitty += ''.join(f'color{i} {cols[f"color{i}"]}\n' for i in range(16))
-    (directory/'kitty.conf').write_text(kitty)
+    ghostty_palette(directory)
     (directory/'fuzzel.ini').write_text(f'''[colors]
 background={bg[1:]}ff
 text={fg[1:]}ff
@@ -179,11 +199,17 @@ def apply():
         r=run(cmd,check=False)
         if r.returncode:
             failures.append(' '.join(cmd[:3])+': '+r.stderr.strip()+r.stdout.strip())
-    # Kitty documents SIGUSR1 as config reload; no remote-control socket enabled.
+    # Ghostty handles SIGUSR2 only once its GTK main loop is ready.
     for p in Path('/proc').glob('[0-9]*'):
         try:
-            if p.stat().st_uid == os.getuid() and (p/'comm').read_text().strip() == 'kitty':
-                os.kill(int(p.name),signal.SIGUSR1)
+            if p.stat().st_uid != os.getuid() or (p/'comm').read_text().strip() != 'ghostty':
+                continue
+            signum = signal.SIGUSR2
+            if Path(os.readlink(p/'exe')).name == 'ghostty':
+                caught = next(line.split()[1] for line in (p/'status').read_text().splitlines()
+                              if line.startswith('SigCgt:'))
+                if int(caught, 16) & (1 << (signum - 1)):
+                    os.kill(int(p.name), signum)
         except (FileNotFoundError,PermissionError,ProcessLookupError):
             pass
     if failures:
@@ -224,12 +250,16 @@ def main():
             if not args.image:
                 parser.error('set needs an image')
             dest=generate(args.image)
+            ghostty_palette(dest)
             select_generation(dest)
         elif args.action=='previous':
             dest=(STATE/'previous').resolve(strict=True)
+            ghostty_palette(dest)
             select_generation(dest)
         elif not (STATE/'current/complete').is_file():
             raise ValueError('No cached theme. Run hf-theme set IMAGE first.')
+        if args.action=='restore':
+            ghostty_palette((STATE/'current').resolve(strict=True))
         if args.action!='status' and not args.no_apply:
             try:
                 apply()
@@ -237,8 +267,10 @@ def main():
                 # A failed live update must not strand half the desktop on a
                 # new generation. Return every consumer to the previous one.
                 if args.action in ('set','previous') and (STATE/'previous/complete').is_file():
-                    link('current',(STATE/'previous').resolve())
                     try:
+                        fallback=(STATE/'previous').resolve()
+                        ghostty_palette(fallback)
+                        link('current',fallback)
                         apply()
                     except (RuntimeError,OSError,subprocess.SubprocessError) as rollback_error:
                         print('Live rollback also needs attention: '+str(rollback_error),file=sys.stderr)

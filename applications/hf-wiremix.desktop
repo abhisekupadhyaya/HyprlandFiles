@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Wiremix
+Comment=Adjust PipeWire audio
+Exec=/usr/bin/ghostty -e @HOME@/.local/bin/wiremix
+Categories=AudioVideo;Audio;
+Terminal=false

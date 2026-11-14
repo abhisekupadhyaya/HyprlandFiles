@@ -10,7 +10,7 @@ the operator's approval. Never send passwords to a log or issue.
 - [ ] Open-lid boot automatically shows the username chooser. Select the intended
       user, try a wrong password (desktop must remain inaccessible), then login.
       Test Ctrl+Alt+F2 requires authentication; Ctrl+Alt+F7 returns to GUI.
-- [ ] Kitty, launcher, fonts, notifications, clipboard, audio and physical keys
+- [ ] Ghostty, Yazi, Superfile, Wiremix, Bluetui, launcher, fonts, notifications, clipboard, audio and physical keys
       work. Confirm a real application authentication prompt through the agent,
       without installing a special checker merely for appearance.
 - [ ] Select a real file in a portal chooser and test a normal application's

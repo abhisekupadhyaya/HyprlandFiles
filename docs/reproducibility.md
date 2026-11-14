@@ -41,7 +41,7 @@ against the manifest in the reviewed source checkout, plus .deb package/version/
 architecture identities. The kit's own manifest cannot authorize changed bytes.
 Tampered, missing, redirected or stale kits are refused before installation.
 
-The 33 artifacts are 28 exact desktop packages, the patched nwg-hello package,
+The 31 artifacts are 26 exact desktop packages, the patched nwg-hello package,
 its original Ubuntu build input, and three locked Python wheels. Install uses
 prebuilt verified desktop packages; it skips the greeter build and does not add
 the PPA on a fresh machine. Normal Ubuntu dependencies still come from signed

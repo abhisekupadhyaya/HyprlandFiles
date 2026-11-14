@@ -12,10 +12,12 @@ from pathlib import Path
 import pwd
 import subprocess
 import sys
+import tempfile
 
 from hflib import (PREFIX, ROOT_STATE, VERSION, Transaction, atomic, checked_download,
                    extract_wheel, fingerprint, managed_state, operation, os_release,
                    output, reject_apt_removals, require_supported, run, validate_options, no_symlink_parents, detect_profile, reject_unrelated_changes)
+from tui import TUI_PACKAGES, install_operations as tui_operations, locked_sources, preflight as tui_preflight
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT/'locks/ubuntu-26.04-amd64.json').read_text())
@@ -24,10 +26,10 @@ AUDIO = ('pipewire.service','pipewire.socket','pipewire-pulse.service',
 DESKTOP = ('waybar.service','hypridle.service','hyprpaper.service','swaync.service')
 BASE_PACKAGES = ('python3','python3-gi','gir1.2-gtk-3.0','dbus-user-session','libpam-systemd',
                  'pipewire','pipewire-pulse','wireplumber','xdg-desktop-portal',
-                 'xdg-desktop-portal-gtk','xwayland','thunar','pavucontrol','playerctl',
+                 'xdg-desktop-portal-gtk','xwayland','playerctl',
                  'gsettings-desktop-schemas','dconf-gsettings-backend','brightnessctl','wl-clipboard','grim','slurp','libnotify-bin',
                  'fonts-inter','fonts-jetbrains-mono','fonts-noto-color-emoji',
-                 'adwaita-icon-theme','upower','less','util-linux','ca-certificates')
+                 'adwaita-icon-theme','upower','less','util-linux','ca-certificates',*TUI_PACKAGES)
 
 
 def supported():
@@ -80,7 +82,7 @@ def render(text, home, opts):
 
 def user_operations(root, home, opts, generation=None):
     operations=[]
-    for folder in ('hypr','waybar','kitty','fuzzel','swaync','xdg-desktop-portal'):
+    for folder in ('hypr','waybar','ghostty','fuzzel','swaync','xdg-desktop-portal'):
         for source in sorted((root/'config'/folder).rglob('*')):
             if source.is_file():
                 relative=source.relative_to(root/'config')
@@ -89,10 +91,13 @@ def user_operations(root, home, opts, generation=None):
     for unit in DESKTOP:
         operations.append(operation(home/'.config/systemd/user/graphical-session.target.wants'/unit,link='/usr/lib/systemd/user/'+unit))
     operations.append(operation(home/'.config/systemd/user/hyprpolkitagent.service',link='/dev/null'))
-    for unit in ('thunar.service','xdg-desktop-portal-gtk.service','xdg-desktop-portal-hyprland.service'):
+    for unit in ('xdg-desktop-portal-gtk.service','xdg-desktop-portal-hyprland.service'):
         operations.append(operation(home/'.config/systemd/user'/f'{unit}.d/hyprlandfiles.conf','[Unit]\nPartOf=graphical-session.target\nAfter=graphical-session.target\n'))
     for source in sorted((root/'applications').glob('*.desktop')):
-        operations.append(operation(home/'.local/share/applications'/source.name,source.read_text()))
+        operations.append(operation(home/'.local/share/applications'/source.name,render(source.read_text(),home,opts)))
+    mimeapps=home/'.config/mimeapps.list'
+    if not os.path.lexists(mimeapps):
+        operations.append(operation(mimeapps,'[Default Applications]\ninode/directory=hf-yazi.desktop;\n'))
     operations.append(operation(home/'.config/hyprlandfiles/settings.json',json.dumps(opts,indent=2)+'\n'))
     state=home/'.local/state/hyprlandfiles'
     operations.append(operation(home/'.config/hypr/hyprpaper.conf',link=str(state/'current/hyprpaper.conf')))
@@ -176,7 +181,9 @@ def plan(a):
     print('PPA, exact ABI pins, root-owned runtime, greetd + patched nwg-hello/labwc, desktop-only audio.')
     print('Packages:', ' '.join([*(f'{k}={v}' for k,v in LOCK['packages'].items()),*BASE_PACKAGES,'nwg-hello='+LOCK['nwg_hello']['version']]))
     print('System config: /etc/{greetd,nwg-hello,hyprlandfiles,systemd}; runtime:',PREFIX)
-    print('User config: per-file ~/.config/{hypr,waybar,kitty,fuzzel,swaync,xdg-desktop-portal,systemd}; desktop entries.')
+    print('Terminal tools:', ', '.join(item['name'] for item in locked_sources(ROOT)))
+    print('TUI inputs come from checksum-locked upstream sources. Wiremix builds as the desktop account.')
+    print('User config paths include ~/.config/{hypr,waybar,ghostty,fuzzel,swaync,xdg-desktop-portal,systemd} and ~/.local/{bin,share/applications}.')
     if a.profile=='laptop-server': print('Lid policy: ignore lid suspend on AC/battery/docked; lock the existing session on close. Takes effect after reboot.')
     print('Activation: enable controller for next boot only. No automatic logout, reboot or logind restart.')
     print('Preserved: disks, network/Netplan, SSH/Tailscale, firewall, drivers, bootloader, PAM policy, OS security updates.')
@@ -298,19 +305,25 @@ def user_install(a):
     store.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
     with (store.parent/'installer.lock').open('w') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        tx=Transaction(store,home,managed_state(store))
+        managed=managed_state(store)
+        tx=Transaction(store,home,managed)
+        tui_preflight(home,managed,a.adopt)
         theme=theme_module(PREFIX)
         # Prepare (never apply) a complete generation. Existing selected palette
         # is preserved on rerun. State/current itself is journalled separately.
         if (theme.STATE/'current/complete').is_file(): generation=(theme.STATE/'current').resolve()
         else: generation=theme.generate(Path(a.wallpaper).resolve() if a.wallpaper else PREFIX/'assets/royal-blue.png')
-        ops=user_operations(PREFIX,home,options(a),generation)
+        theme.ghostty_palette(generation)
+        with tempfile.TemporaryDirectory(prefix='hf-tui-',dir=store.parent) as workspace:
+            programs=tui_operations(PREFIX,home,Path(workspace))
+        ops=user_operations(PREFIX,home,options(a),generation)+programs
         tx.apply(ops,adopt=a.adopt)
         from appearance import apply_preferences
         apply_preferences(home)
         run(['systemctl','--user','daemon-reload'])
         verify=run(['Hyprland','--verify-config','-c',home/'.config/hypr/hyprland.lua'],text=True,capture_output=True)
         print(verify.stdout)
+        run(['/usr/bin/ghostty','+validate-config','--config-file='+str(home/'.config/ghostty/config.ghostty')])
         print('User files installed and native Lua parser passed. Start local login after a saved-work reboot; SSH never starts a desktop.')
 
 
@@ -396,7 +409,9 @@ def setup(a):
     plan(a)
     no_gui()
     store=Path.home()/'.local/state/hyprlandfiles/backups'
-    Transaction(store,Path.home(),managed_state(store)).apply(user_operations(ROOT,Path.home(),options(a)),adopt=a.adopt,dry_run=True)
+    managed=managed_state(store)
+    tui_preflight(Path.home(),managed,a.adopt)
+    Transaction(store,Path.home(),managed).apply(user_operations(ROOT,Path.home(),options(a)),adopt=a.adopt,dry_run=True)
     if not a.yes:
         if not sys.stdin.isatty(): raise ValueError('Interactive terminal required, or review plan and explicitly use --yes')
         if input('Install this plan (PPA trust, packages, login files and next-boot controller)? Type INSTALL: ')!='INSTALL':

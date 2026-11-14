@@ -55,7 +55,9 @@ configuration directories are never replaced. Keep personal Lua additions in
 - Hyprland **0.57.0 Lua** config, pinned as a compatible ABI stack; other Hypr
   tools retain their own supported configuration formats.
 - **pywal16** colours derived from a still wallpaper, cached before login and
-  coordinated across Hyprland, Waybar, Kitty, Fuzzel, notifications and hyprlock.
+  coordinated across Hyprland, Waybar, Ghostty, Fuzzel, notifications and hyprlock.
+- Yazi, Superfile, Wiremix and Bluetui handle files, audio and Bluetooth in
+  Ghostty or over SSH. tmux and btop are available in both contexts.
 - A dark system appearance by default (GTK and standard app portal), with
   fresh VS Code preferences following the OS. Existing VS Code customization is preserved.
 - The included original blue artwork; change it with **Super+Alt+W** or

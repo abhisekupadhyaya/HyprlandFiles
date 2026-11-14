@@ -33,8 +33,10 @@ def main():
                 print(result.stdout+result.stderr,file=sys.stderr)
                 raise ValueError('Native Lua validation failed for '+profile)
             subprocess.run(['fuzzel','--check-config','--config',str(home/'.config/fuzzel/fuzzel.ini')],check=True,env=env)
+            subprocess.run(['ghostty','+validate-config','--config-file='+
+                            str(home/'.config/ghostty/config.ghostty')],check=True,env=env)
             tx.rollback(backup)
-            print('PASS native Lua and Fuzzel:',profile,'scale',scale)
+            print('PASS native Lua, Fuzzel and Ghostty:',profile,'scale',scale)
     print('No installed user config, compositor, service or login was changed.')
 
 if __name__=='__main__':main()

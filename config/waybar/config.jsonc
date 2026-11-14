@@ -52,7 +52,7 @@
   "wireplumber": {
     "format": "Vol {volume}%",
     "format-muted": "Muted",
-    "on-click": "pavucontrol",
+    "on-click": "/usr/local/bin/hf-menu audio",
     "on-click-right": "/usr/local/bin/hf-control volume mute",
     "on-scroll-up": "/usr/local/bin/hf-control volume up",
     "on-scroll-down": "/usr/local/bin/hf-control volume down"

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Yazi
+Comment=Browse files and preview media
+Exec=/usr/bin/ghostty -e @HOME@/.local/bin/yazi %f
+Categories=System;FileTools;FileManager;
+Terminal=false
+MimeType=inode/directory;

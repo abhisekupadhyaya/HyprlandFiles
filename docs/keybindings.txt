@@ -3,11 +3,11 @@ HYPRLANDFILES — SHORTCUTS AND RECOVERY
 Super acts like Command; Alt acts like Option. Natural scrolling is enabled.
 Super+Space                 Search apps
 Super+Ctrl+Space            Main menu (also click Apps in the bar)
-Super+Return / Super+E      Terminal / files
+Super+Return / Super+E      Ghostty / Yazi files
 Super+K or Super+/          This guide
-Super+C/V                   Copy/paste; Kitty gets Ctrl+Shift, GUI apps Ctrl
+Super+C/V                   Copy/paste; Ghostty gets Ctrl+Shift, GUI apps Ctrl
 Super+W/T/N                 Close tab / new tab / new window (application handles)
-Super+F                     Find; Kitty scrollback
+Super+F                     Find; Ghostty scrollback
 Super+A/X/S/Z/L             GUI select all / cut / save / undo / address field
 Super+Shift+Z               GUI redo
 Super+Q                     Close focused window gracefully
@@ -28,6 +28,9 @@ Super+left/right drag       Move / resize window
 Super+Shift+3 / Super+Shift+4 Full / region screenshot
 Print                       Region screenshot to clipboard
 Brightness/volume/media    Physical keys, with transient feedback
+
+Click Volume for Wiremix. Open Superfile or Bluetui from the Apps menu.
+Over SSH, run yazi, spf, wiremix, bluetui, tmux, or btop.
 
 LOCK keeps apps. LOG OUT closes apps and returns to login.
 SERVER MODE closes apps and hides login; save work first.

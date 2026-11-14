@@ -6,9 +6,9 @@
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = @SCALE_LUA@ })
 
 ------------------------------------------------------------------ programs
-local terminal = "kitty"
+local terminal = "ghostty"
 local launcher = "fuzzel"
-local files    = "thunar"
+local files    = "ghostty -e @HOME@/.local/bin/yazi"
 local lock     = "/usr/local/bin/hf-lock"
 
 ------------------------------------------------------------------ environment
