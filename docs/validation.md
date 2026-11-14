@@ -27,7 +27,7 @@ Extended tests exercise real pywal16 palette generation and cross-component
 outputs; Unix socket readiness uses a private temporary socket.
 
 Current automated results are recorded in
-[release-preparation.json](release-preparation.json): 129 tests pass, including
+[release-preparation.json](release-preparation.json): 137 tests pass, including
 real locked-wheel palette generation, the Server mode menu command, local greetd
 entrypoint checks, terminal payload rollback, offline Cargo staging, archive
 validation and vendor reproducibility. Appearance tests use a private schema and
@@ -66,6 +66,16 @@ Menu applications and logout use independent scopes. A disposable live systemd
 test confirmed that the application scope survives stopping its launching
 service, without running desktop actions. Fresh login and complete Server mode
 acceptance with this repair still require physical verification.
+
+The optional black/blue Bash add-on has been applied on the existing host.
+Ghostty's merged configuration reports an opaque black background, the installed
+Nerd Font and `/bin/bash`. Both local and Remote SSH VS Code settings select the
+same Bash profile and terminal palette. Actual interactive pseudo-terminal tests
+using the installed Ghostty and VS Code integration scripts preserve their OSC
+hooks; accepting and executing a harmless history suggestion passes in both
+contexts and with tmux's terminal type. JSONC preservation, file permissions and
+reapplication without changes are covered. Physical GUI appearance and client-
+side font installation for the separate Remote SSH computer remain unconfirmed.
 
 **Release gates still open:** actual clean Ubuntu Server install through APT,
 manual boot/TTY/authentication/lifecycle tests of this portable layout, broader

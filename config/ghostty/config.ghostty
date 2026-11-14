@@ -7,3 +7,5 @@ window-padding-y = 10
 background-opacity = 0.96
 cursor-style = bar
 keybind = ctrl+shift+f=start_search
+# Optional shared Bash/VS Code style; installed by tools/terminal_setup.py.
+config-file = ?@HOME@/.config/hyprlandfiles/terminal/ghostty.conf
