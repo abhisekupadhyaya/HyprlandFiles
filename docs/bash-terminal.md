@@ -19,13 +19,30 @@ and does not download or replace any fonts or tools:
 python3 tools/terminal_setup.py apply --style-only
 ```
 
-Oh My Posh uses two rows of cyan, cobalt and navy powerline ribbons. The first
-shows user/host, physical RAM usage and the last command's duration. The second
-shows Bash, a clock/day with timezone, the current path, Git changes and failures.
-The clock and less essential fields hide in narrow terminals. Nerd Font icons
-and angular caps match the ribbon layout; existing font preferences remain
-unchanged with `--style-only`. ble.sh supplies Bash history suggestions and
-syntax highlighting; Right Arrow accepts suggestions.
+Oh My Posh uses one compact row of navy/blue context ribbons above a fixed `❯`
+input marker. It shows `user@host`, project/folder, Git branch
+and changed/staged indicators. Long paths and branch names are abbreviated;
+less essential fields hide in narrow terminals. The input marker turns red on
+failure, with the exit code beside the context. Duration appears only above two
+seconds. Constant RAM, shell and clock labels are omitted to keep the command
+area clear. Existing font preferences remain unchanged with `--style-only`.
+
+Active Python virtualenv, Conda, explicit pyenv and direnv contexts appear only
+when their activation variables are present. Generic `.venv`/`venv` names use
+their parent directory; custom names are retained. A virtualenv takes priority
+over a surrounding Conda environment. Node projects get a Node badge, including
+the selected NVM version when `NVM_BIN` identifies it. These badges do not launch
+Python, Conda, pyenv, Node or npm, read `.env` secrets, or activate environments.
+With a different Node manager, the badge says `node` rather than probing for a
+version. Ordinary activation/deactivation updates the next prompt. The shared
+Bash hook suppresses duplicate activation prefixes with
+`VIRTUAL_ENV_DISABLE_PROMPT=1` and `CONDA_CHANGEPS1=false`.
+
+ble.sh supplies Bash history suggestions and syntax highlighting; Right Arrow
+accepts suggestions. Previously entered prompts collapse to the input marker
+while staying in the same directory and activation context. The first full
+header after a directory/environment change remains as a scrollback landmark.
+Compaction reuses ble.sh's rendered prompt without another prompt process.
 
 The palette source is `config/terminal/blue-oled.json`: an 80% black tint,
 off-white text, blue/cyan accents and coordinated ANSI colours. The Ghostty
@@ -73,7 +90,10 @@ Bash or disable suggestions without deleting configuration:
 ```sh
 HF_BASH_STYLE=plain bash
 HF_BASH_SUGGESTIONS=0 bash
+HF_PROMPT_TRANSIENT=0 bash
 ```
+
+The last option keeps every full prompt header instead of compacting history.
 
 Inputs are pinned in `locks/terminal-amd64.json`. Prepare them without applying:
 

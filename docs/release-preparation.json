@@ -4,7 +4,7 @@
   "date": "2026-11-13",
   "status": "release candidate; clean-machine and physical gates open",
   "automated_tests": {
-    "passed": 141,
+    "passed": 146,
     "scope": "isolated filesystem, lifecycle, IPC, palette, activation, terminal staging, offline vendor retention and rollback",
     "live_install": false
   },
@@ -87,7 +87,11 @@
     "installed_on_existing_host": true,
     "terminal_background": "#000000",
     "terminal_opacity": 0.8,
-    "prompt_style": "Two rows of opaque cyan, cobalt and navy ribbons",
+    "prompt_style": "Compact user@host/project/Git/environment ribbons above a fixed input marker",
+    "context_badges": "Virtualenv, Conda, explicit pyenv, direnv and project-scoped Node/NVM; no interpreter probes",
+    "transient_history": "ble.sh same-directory compaction with activation-context boundaries; no extra renderer process",
+    "native_environment_switches_and_failure_status": true,
+    "local_render_median_ms": "Approximately 8 at home and 12–14 in the repository; 24 measured samples after 3 warmups, excludes SSH latency",
     "hyprland_blur": {
       "size": 7,
       "passes": 3,

@@ -145,6 +145,46 @@ class Settings(unittest.TestCase):
 
 
 class Bash(unittest.TestCase):
+    def test_transient_headers_keep_environment_boundaries_and_exit_status(self):
+        with tempfile.TemporaryDirectory() as d:
+            home=Path(d);binary=home/'.local/bin/oh-my-posh';binary.parent.mkdir(parents=True)
+            binary.write_text('#!/bin/sh\nprintf ":\\n"\n');binary.chmod(0o755)
+            config=home/'.config/hyprlandfiles/terminal/blue-oled.omp.json';config.parent.mkdir(parents=True);config.write_text('{}')
+            env=dict(os.environ,HOME=str(home),TERM='xterm-256color',HF_BASH_STYLE='blue-oled')
+            for key in ('_HF_BASH_INITIALIZED','_HF_PROMPT_CONTEXT','HF_PROMPT_TRANSIENT'):env.pop(key,None)
+            script='''
+bleopt() { local item; for item in "$@"; do printf -v "bleopt_${item%%=*}" %s "${item#*=}"; done; }
+ble-face() { :; }; ble-attach() { :; }; blehook() { :; }
+BLE_VERSION=test
+source "$1"
+[[ $VIRTUAL_ENV_DISABLE_PROMPT == 1 && $CONDA_CHANGEPS1 == false ]] || exit 10
+_hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == '' ]] || exit 11
+_hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == same-dir:trim ]] || exit 12
+VIRTUAL_ENV=/work/new/.venv
+_hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == '' ]] || exit 13
+_hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == same-dir:trim ]] || exit 14
+false; _hf_prompt_transient; result=$?
+[[ $result == 1 ]] || exit 15
+HF_PROMPT_TRANSIENT=0
+_hf_prompt_transient; [[ $bleopt_prompt_ps1_transient == '' ]] || exit 16
+printf '__HF_TRANSIENT_OK__\\n'
+'''
+            master,slave=pty.openpty()
+            try:
+                result=subprocess.run(['/bin/bash','--noprofile','--norc','-ic',script,'test',str(ROOT/'config/bash/terminal.bash')],
+                    env=env,stdin=slave,stdout=slave,stderr=slave,timeout=8)
+                os.close(slave);slave=None;output=b''
+                while True:
+                    try:part=os.read(master,65536)
+                    except OSError:break
+                    if not part:break
+                    output+=part
+                self.assertEqual(result.returncode,0,output.decode(errors='replace'))
+                self.assertIn(b'__HF_TRANSIENT_OK__',output)
+            finally:
+                os.close(master)
+                if slave is not None:os.close(slave)
+
     def test_noninteractive_shell_does_not_initialize_prompt_or_change_term(self):
         script='PS1=plain; source "$1"; printf "TERM=%s\nPS1=%s\n" "$TERM" "$PS1"'
         result=subprocess.run(['/bin/bash','--noprofile','--norc','-c',script,'test',str(ROOT/'config/bash/terminal.bash')],

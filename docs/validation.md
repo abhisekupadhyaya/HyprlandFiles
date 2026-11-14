@@ -27,7 +27,7 @@ Extended tests exercise real pywal16 palette generation and cross-component
 outputs; Unix socket readiness uses a private temporary socket.
 
 Current automated results are recorded in
-[release-preparation.json](release-preparation.json): 141 tests pass, including
+[release-preparation.json](release-preparation.json): 146 tests pass, including
 real locked-wheel palette generation, the Server mode menu command, local greetd
 entrypoint checks, terminal payload rollback, offline Cargo staging, archive
 validation and vendor reproducibility. Appearance tests use a private schema and
@@ -69,8 +69,15 @@ acceptance with this repair still require physical verification.
 
 The optional black/blue Bash add-on has been applied on the existing host.
 Ghostty's merged configuration reports a black background with 0.8 opacity,
-opaque ribbon cells and `/bin/bash`. The reference-style prompt includes filled
-cyan/blue ribbons for RAM, duration, Bash, clock/day, path, Git state and errors.
+opaque ribbon cells and `/bin/bash`. The compact prompt shows `user@host`,
+project/folder, Git and active environment context above a fixed input marker.
+Timing is conditional above two seconds and failures show a red marker/exit code.
+Python virtualenv/Conda/pyenv/direnv and project-scoped Node context use exported
+activation variables without interpreter probes. Four optional native tests use
+the checksum-verified retained Oh My Posh executable; they skip when that input
+has not been prepared. Spy interpreters verify that environment badges do not
+execute them, including after NVM switches. Long Git labels are abbreviated and
+Git hides below 110 columns to make room for identity and environment context.
 Existing font files, family, size and line height were verified unchanged during
 the style-only update. The installed Hyprland config passes its isolated native
 parser, and the existing compositor accepted size 7 / 3-pass blur on config reload.
@@ -78,7 +85,14 @@ Both local and Remote SSH VS Code settings select the same Bash profile and
 terminal palette. Actual interactive pseudo-terminal tests
 using the installed Ghostty and VS Code integration scripts preserve their OSC
 hooks; accepting and executing a harmless history suggestion passes in both
-contexts and with tmux's terminal type. JSONC preservation, file permissions and
+contexts and with tmux's terminal type. Real Python environment activation and
+deactivation, failure status and ble.sh transient header boundaries also pass
+through all three startup paths. Repeated headers collapse without another
+prompt-renderer invocation. A local interleaved benchmark of 24 measured renders
+per case, after three warmups, observed about 8 ms in the home directory and
+12–14 ms in the repository, including an active virtualenv. This measures the
+renderer process, not SSH latency; the previous theme measured similarly.
+JSONC preservation, file permissions and
 reapplication without changes are covered. The owner reports adding the three
 application-scoped VS Code glass controls to the separate client's local User
 Settings; Remote SSH cannot apply those controls. Actual GUI appearance of the
