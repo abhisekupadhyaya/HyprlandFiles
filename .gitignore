@@ -14,3 +14,5 @@ reports/
 *.pem
 *.key
 settings.local.json
+.DS_Store
+/config/chromium/samarkand-oled/Cached Theme.pak

@@ -78,6 +78,11 @@ Ghostty and VS Code style, run `python3 tools/terminal_setup.py apply` as your
 desktop user. See [shared Bash terminal style](docs/bash-terminal.md) for Remote
 SSH fonts, retained inputs and rollback.
 
+The optional Samarkand OLED browser theme is in `config/chromium/samarkand-oled`.
+On the computer running Chrome, open `chrome://extensions`, enable **Developer
+mode**, and select that folder through **Load unpacked**. The wide mosaic is the
+New Tab background. The two small mosaic tiles are available as alternate artwork.
+
 ### Laptop/server behaviour
 
 | Event | Behaviour |
